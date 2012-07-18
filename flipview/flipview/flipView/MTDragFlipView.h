@@ -3,7 +3,7 @@
 //  Photocus
 //
 //  Created by zrz on 12-4-18.
-//  Copyright (c) 2012年 __MyCompanyName__. All rights reserved.
+//  Copyright (c) 2012年 Sctab. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -15,9 +15,10 @@ typedef struct _FZSRange {
 } FZRange;
 
 typedef enum {
-    FZDragFlipStateNormal,
-    FZDragFlipStateLoading
-} FZDragFlipState;
+    MTFlipViewTypeUpAbove,
+    MTFlipViewTypeDownAbove,
+    MTFlipViewTypeShowAbove
+} MTFlipViewType;
 
 @protocol MTDragFlipViewDelegate;
 @class CAAnimationGroup;
@@ -27,7 +28,6 @@ typedef enum {
     int             _state;         //0any ,1updown,2leftright
     UIView          *_backContentView;
     UIView          *_leftView;
-    UIImageView     *_backgroundView;    //背景层
     UIView          *_transationView;
     NSMutableArray  *_cachedImageViews;
     FZRange         _cacheRange;
@@ -49,6 +49,10 @@ typedef enum {
     NSMutableDictionary     *_unuseViews;
 }
 
+- (id)initWithType:(MTFlipViewType)type;
+
+@property (nonatomic, readonly) MTFlipViewType  type;
+
 @property (nonatomic, assign)   id<MTDragFlipViewDelegate>  delegate;
 @property (nonatomic, assign)   NSInteger   pageIndex;
 @property (nonatomic, readonly) NSInteger   count;
@@ -57,8 +61,6 @@ typedef enum {
 @property (nonatomic, readonly) UILabel     *bottomLabel,
                                             *topLabel;
 @property (nonatomic, assign)   BOOL        loadAll, dragEnable;
-@property (nonatomic, strong)   UIView      *animationView;
-@property (nonatomic, assign)   FZDragFlipState state;
 
 // is opened background view or not.
 @property (nonatomic, readonly) BOOL        open;
@@ -123,12 +125,5 @@ typedef enum {
          atIndex:(NSInteger)index;
 
 - (MTFlipAnimationView*)flipViewPrePushDragingView:(MTDragFlipView *)flipView;
-
-@end
-
-@interface UIView(FZDragFlipViewDelegate)
-
-- (void)setIndentify:(NSString*)indentify;
-- (NSString*)indentify;
 
 @end

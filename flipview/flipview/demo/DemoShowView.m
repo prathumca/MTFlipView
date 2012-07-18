@@ -3,7 +3,7 @@
 //  flipview
 //
 //  Created by zrz on 12-7-16.
-//  Copyright (c) 2012年 __MyCompanyName__. All rights reserved.
+//  Copyright (c) 2012年 Sctab. All rights reserved.
 //
 
 #import "DemoShowView.h"
@@ -22,7 +22,6 @@
         _label.numberOfLines = 0;
         _label.textColor = [UIColor whiteColor];
         [self addSubview:_label];
-        
         self.backgroundColor = [UIColor blueColor];
     }
     return self;

@@ -25,6 +25,8 @@
 		5F171F9A15B3F3C40027E6A2 /* DemoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F171F9915B3F3C40027E6A2 /* DemoModel.m */; };
 		5F171F9D15B3F6780027E6A2 /* MTBlockOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F171F9C15B3F6780027E6A2 /* MTBlockOperation.m */; };
 		5F171FAA15B40DD10027E6A2 /* DemoMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F171FA915B40DD00027E6A2 /* DemoMenuViewController.m */; };
+		5F4B575C15B6A7120025CBA2 /* Demo2ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4B575B15B6A7120025CBA2 /* Demo2ViewController.m */; };
+		5F4B575F15B6B5000025CBA2 /* DemoSelecterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4B575E15B6B4FF0025CBA2 /* DemoSelecterViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -58,6 +60,10 @@
 		5F171F9C15B3F6780027E6A2 /* MTBlockOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MTBlockOperation.m; sourceTree = "<group>"; };
 		5F171FA815B40DD00027E6A2 /* DemoMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DemoMenuViewController.h; sourceTree = "<group>"; };
 		5F171FA915B40DD00027E6A2 /* DemoMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DemoMenuViewController.m; sourceTree = "<group>"; };
+		5F4B575A15B6A7120025CBA2 /* Demo2ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Demo2ViewController.h; sourceTree = "<group>"; };
+		5F4B575B15B6A7120025CBA2 /* Demo2ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Demo2ViewController.m; sourceTree = "<group>"; };
+		5F4B575D15B6B4FF0025CBA2 /* DemoSelecterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DemoSelecterViewController.h; sourceTree = "<group>"; };
+		5F4B575E15B6B4FF0025CBA2 /* DemoSelecterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DemoSelecterViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,8 +114,11 @@
 			children = (
 				5F171F6815B3AF320027E6A2 /* AppDelegate.h */,
 				5F171F6915B3AF320027E6A2 /* AppDelegate.m */,
+				5F4B575D15B6B4FF0025CBA2 /* DemoSelecterViewController.h */,
+				5F4B575E15B6B4FF0025CBA2 /* DemoSelecterViewController.m */,
 				5F171F7015B3AF780027E6A2 /* flipView */,
 				5F171F6015B3AF320027E6A2 /* Supporting Files */,
+				5F4B575815B6A6AE0025CBA2 /* demo2 */,
 				5F171F8615B3B8A20027E6A2 /* demo */,
 			);
 			path = flipview;
@@ -157,6 +166,15 @@
 				5F171FA915B40DD00027E6A2 /* DemoMenuViewController.m */,
 			);
 			path = demo;
+			sourceTree = "<group>";
+		};
+		5F4B575815B6A6AE0025CBA2 /* demo2 */ = {
+			isa = PBXGroup;
+			children = (
+				5F4B575A15B6A7120025CBA2 /* Demo2ViewController.h */,
+				5F4B575B15B6A7120025CBA2 /* Demo2ViewController.m */,
+			);
+			path = demo2;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -233,6 +251,8 @@
 				5F171F9A15B3F3C40027E6A2 /* DemoModel.m in Sources */,
 				5F171F9D15B3F6780027E6A2 /* MTBlockOperation.m in Sources */,
 				5F171FAA15B40DD10027E6A2 /* DemoMenuViewController.m in Sources */,
+				5F4B575C15B6A7120025CBA2 /* Demo2ViewController.m in Sources */,
+				5F4B575F15B6B5000025CBA2 /* DemoSelecterViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -338,6 +358,7 @@
 				5F171F6F15B3AF320027E6A2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

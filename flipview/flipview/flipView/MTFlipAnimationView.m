@@ -3,7 +3,7 @@
 //  Photocus
 //
 //  Created by zrz on 12-5-8.
-//  Copyright (c) 2012年 __MyCompanyName__. All rights reserved.
+//  Copyright (c) 2012年 Sctab. All rights reserved.
 //
 
 #import "MTFlipAnimationView.h"
@@ -36,13 +36,12 @@ static NSOperationQueue *__queue;
     _operation = nil;
 }
 
-- (void)setAnimationPercent:(CGFloat)percent{}
 
 - (NSOperationQueue*)mainQueue
 {
     if (!__queue) {
         __queue = [[NSOperationQueue alloc] init];
-        __queue.maxConcurrentOperationCount = 1;
+        __queue.maxConcurrentOperationCount = 4;
         [__queue setSuspended:NO];
     }
     return __queue;
@@ -64,5 +63,16 @@ static NSOperationQueue *__queue;
 {
     _imageView.image = image;
 }
+
+
+- (void)setPercent:(CGFloat)percent isUp:(BOOL)up isBorder:(BOOL)border{}
+- (void)setAnimationPercent:(CGFloat)percent coverdView:(MTFlipAnimationView *)coverdView{}
+
+- (void)moveUpOut:(MTFlipAnimationOverBlock)block coverdView:(MTFlipAnimationView *)coverdView{}
+- (void)moveDownIn:(MTFlipAnimationOverBlock)block coverdView:(MTFlipAnimationView *)coverdView{}
+- (void)restoreUp:(MTFlipAnimationView*)up
+             down:(MTFlipAnimationView*)down
+            block:(MTFlipAnimationOverBlock)block{}
+- (void)restoreAndShake:(MTFlipAnimationOverBlock)block{}
 
 @end

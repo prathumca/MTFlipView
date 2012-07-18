@@ -3,11 +3,11 @@
 //  flipview
 //
 //  Created by zrz on 12-7-16.
-//  Copyright (c) 2012年 __MyCompanyName__. All rights reserved.
+//  Copyright (c) 2012年 Sctab. All rights reserved.
 //
 
 #import "AppDelegate.h"
-#import "DemoViewController.h"
+#import "DemoSelecterViewController.h"
 
 @implementation AppDelegate
 
@@ -20,8 +20,9 @@
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     
-    DemoViewController *ctrl = [DemoViewController new];
-    self.window.rootViewController = ctrl;
+    DemoSelecterViewController *ctrl = [DemoSelecterViewController new];
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:ctrl];
+    self.window.rootViewController = nav;
     
     return YES;
 }

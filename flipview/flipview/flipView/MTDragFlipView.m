@@ -3,7 +3,7 @@
 //  Photocus
 //
 //  Created by zrz on 12-4-18.
-//  Copyright (c) 2012年 __MyCompanyName__. All rights reserved.
+//  Copyright (c) 2012年 Sctab. All rights reserved.
 //
 
 #import "MTDragFlipView.h"
@@ -55,10 +55,19 @@ int count;
 
 @synthesize delegate = _delegate, pageIndex = _pageIndex;
 @synthesize backgroundColor = m_backgroundColor;
-@synthesize topLabel = _topLabel, state = _tstate;
+@synthesize topLabel = _topLabel, type = _type;
 @synthesize bottomLabel = _bottomLabel, loadAll = _loadAll;
-@synthesize animationView = _animationView, count = _count;
+@synthesize count = _count;
 @synthesize dragEnable = _dragEnable;
+
+- (id)initWithType:(MTFlipViewType)type
+{
+    self = [self init];
+    if (self) {
+        _type = type;
+    }
+    return self;
+}
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -72,9 +81,6 @@ int count;
                                                                   action:@selector(panndOn:)];
         [self addGestureRecognizer:_mainPanGesture];
         
-        
-        _backgroundView = [[UIImageView alloc] initWithFrame:self.bounds];
-        _backgroundView.backgroundColor = [UIColor grayColor];
         _bottomLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, self.bounds.size.height - 30, self.bounds.size.width, 15)];
         _bottomLabel.backgroundColor = [UIColor clearColor];
         _bottomLabel.textColor = [UIColor whiteColor];
@@ -83,7 +89,6 @@ int count;
         _bottomLabel.font = [UIFont boldSystemFontOfSize:15];
         _bottomLabel.shadowColor = [UIColor colorWithWhite:0 alpha:0.6];
         _bottomLabel.shadowOffset = CGSizeMake(0, 1);
-        [_backgroundView addSubview:_bottomLabel];
         
         
         _topLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 15, self.bounds.size.width, 15)];
@@ -94,7 +99,6 @@ int count;
         _topLabel.font = [UIFont boldSystemFontOfSize:15];
         _topLabel.shadowColor = [UIColor colorWithWhite:0 alpha:0.6];
         _topLabel.shadowOffset = CGSizeMake(0, 1);
-        [_backgroundView addSubview:_topLabel];
         
         _leftTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self
                                                                   action:@selector(clickLeft:)];
@@ -112,9 +116,7 @@ int count;
         _scrollView.backgroundColor = [UIColor whiteColor];
         [self addSubview:_scrollView];
         self.backgroundColor = [UIColor clearColor];
-        
-        self.animationView = [[[UIApplication sharedApplication] delegate] window];
-        
+                
         _backPanGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self
                                                                   action:@selector(panOnLeft:)];
         _leftPanGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self
@@ -135,24 +137,8 @@ int count;
         imageView.image = [UIImage imageNamed:@"bg_detail_panelshadow"];
         imageView.layer.transform = CATransform3DMakeScale(-1, 1, 1);
         [_transationView addSubview:imageView];
-        
     }
     return self;
-}
-
-- (void)setState:(FZDragFlipState)state
-{
-    if (state == _tstate) {
-        return;
-    }
-    _tstate = state;
-    if (self.state == FZDragFlipStateNormal) {
-        self.userInteractionEnabled = YES;
-        [self resetNowView:[self imageViewWithIndex:_pageIndex]];
-    }else {
-        self.userInteractionEnabled = NO;
-        [self resetNowViewEx:[self imageViewWithIndex:_pageIndex]];
-    }
 }
 
 /*
@@ -202,7 +188,7 @@ int count;
     if (animation) {
         _transationView.hidden = NO;
         [self retainAnimation];
-        [self moveUpOut:nowView];
+        [self moveUpOut:_pageIndex];
     }else {
         NSArray *array = self.subviews;
         for (UIView *view in array) {
@@ -224,7 +210,7 @@ int count;
     }
     if (_animationCount && !self.open) {
         _willToReload = YES;
-        [self resetNowViewEx:[self getDragingView:_pageIndex]];
+        [self resetNowViewEx:_pageIndex];
         return;
     }
     _animationCount = 0;
@@ -308,7 +294,6 @@ int count;
 #define kBaseDurationK  0.4
 #define kBaseDurationS  0.32
 #define kDistanceAdd    100
-#define kBaseDistance   (self.bounds.size.height)
 
 - (MTFlipAnimationView*)imageViewWithIndex:(NSInteger)index
 {
@@ -360,7 +345,6 @@ int count;
             }
             for (int n = _cacheRange.location - 1 ; n >= toIndex; n--) {
                 MTFlipAnimationView *view = [_delegate flipView:self dragingView:n];
-                [view setAnimationPercent:-1];
                 [aniamtionArr addObject:view];
                 [_transationView addSubview:view];
             }
@@ -373,7 +357,6 @@ int count;
         
         for (int n = _cacheRange.location ; n <= _pageIndex ; n++) {
             MTFlipAnimationView *view = [_cachedImageViews objectAtIndex:n];
-            [view setAnimationPercent:-1];
             [aniamtionArr insertObject:view atIndex:0];
         }
         
@@ -381,11 +364,14 @@ int count;
             MTFlipAnimationView *view = [aniamtionArr objectAtIndex:n];
             [_transationView addSubview:view];
             if (0 == n) {
-                [view setAnimationPercent:0];
+                [view setPercent:0 isUp:NO isBorder:NO];
             }else {
+                [view setPercent:- 1 isUp:NO isBorder:NO];
                 CGFloat timeAdd = kTimeAdd * count;
+                UIView *viewPre = [aniamtionArr objectAtIndex:n - 1];
                 [self performSelector:@selector(animationHandle:)
-                           withObject:view
+                           withObject:[NSDictionary dictionaryWithObjectsAndKeys:
+                                       view, @"view", viewPre, @"viewpre", nil]
                            afterDelay:timeAdd];
                 count ++;
             }
@@ -401,16 +387,12 @@ int count;
     _pageIndex = 0;
 }
                  
-- (void)animationHandle:(MTFlipAnimationView*)view
+- (void)animationHandle:(NSDictionary*)dic
 {
-    [UIView animateWithDuration:kBaseDurationK
-                          delay:0
-                        options:UIViewAnimationCurveEaseOut
-                     animations:^{
-                         [view setAnimationPercent:0];
-                     } completion:^(BOOL finished) {
-                         
-                     }];
+    MTFlipAnimationView *view = [dic objectForKey:@"view"],
+                        *viewpre = [dic objectForKey:@"viewpre"];
+    [view moveDownIn:nil
+          coverdView:viewpre];
 }
 
 - (void)setTAnimation:(NSMutableArray*)array
@@ -442,17 +424,12 @@ int count;
             view = [_delegate flipView:self dragingView:index];
             if (index >= [_cachedImageViews count]) {
                 [_cachedImageViews addObject:view];
-                if (index == _pageIndex) {
-                    [_transationView addSubview:view];
-                }else 
-                    [_transationView insertSubview:view atIndex:0];
                 _cacheRange.length ++;
                 view.center = CGPointMake(rect.size.width / 2,
                                           rect.size.height / 2);
             }else {
                 [_cachedImageViews replaceObjectAtIndex:index 
                                              withObject:view];
-                [_transationView addSubview:view];
                 _cacheRange.location --;
                 _cacheRange.length ++;
                 view.center = CGPointMake(rect.size.width / 2,
@@ -469,7 +446,6 @@ int count;
                 }
                 view = [_delegate flipView:self dragingView:index];
                 [_cachedImageViews addObject:view];
-                [_transationView insertSubview:view atIndex:0];
                 _cacheRange.location ++;
                 view.center = CGPointMake(rect.size.width / 2,
                                           rect.size.height / 2);
@@ -477,13 +453,11 @@ int count;
                 MTFlipAnimationView *oldView = [_cachedImageViews lastObject];
                 if ([oldView isKindOfClass:[UIView class]]) {
                     [self pushViewToCache:oldView];
-                    [oldView removeFromSuperview];
                     [_cachedImageViews removeObject:oldView];
                 }
                 view = [_delegate flipView:self dragingView:index];
                 [_cachedImageViews replaceObjectAtIndex:index 
                                              withObject:view];
-                [_transationView addSubview:view];
                 _cacheRange.location --;
                 view.center = CGPointMake(rect.size.width / 2,
                                           - rect.size.height / 2 - 40);
@@ -507,110 +481,50 @@ int count;
     if ([_delegate respondsToSelector:@selector(numberOfFlipViewPage:)]) {
         _count = [_delegate numberOfFlipViewPage:self];
         if (!_count) {
-            _backgroundView.backgroundColor = [UIColor clearColor];
+            _transationView.backgroundColor = [UIColor clearColor];
             return;
         }
     }
     
 }
 
-- (void)moveUpOut:(MTFlipAnimationView*)view
+#pragma mark - aniamtions
+
+- (void)moveUpOut:(NSInteger)index
 {
-    [UIView transitionWithView:view
-                      duration:0.4
-                       options:UIViewAnimationCurveLinear
-                    animations:^{
-                        [view setAnimationPercent:-1];
-                    } completion:^(BOOL finished) {
-                        [self releaseAnimation];
-                    }];
-    
+    MTFlipAnimationView *view = [self getDragingView:index];
+    [view moveUpOut:^(BOOL finish) {
+        [self releaseAnimation];
+    } coverdView:[self getDragingView:index + 1]];
 }
 
 
-- (void)moveDownIn:(MTFlipAnimationView*)view
+- (void)moveDownIn:(NSInteger)index
 {
-    [UIView transitionWithView:view
-                      duration:0.4
-                       options:UIViewAnimationCurveLinear
-                    animations:^{
-                        [view setAnimationPercent:0];
-                    } completion:^(BOOL finished) {
-                        [self releaseAnimation];
-                    }];
+    MTFlipAnimationView *view = [self getDragingView:index];
+    MTFlipAnimationView *nextVIew = [self getDragingView:index + 1];
+    [view moveDownIn:^(BOOL finish) {
+        [self releaseAnimation];
+    } coverdView:nextVIew];
 }
 
 - (void)resetNowView:(MTFlipAnimationView*)view
 {
-    if (self.state == FZDragFlipStateLoading) {
-        [self resetNowViewEx:view];
-        return;
-    }
-    CGRect rect = self.bounds;
-    //_animation = YES;
-    
-    CGFloat hOffset = view.frame.origin.y - rect.origin.y;
-    CGFloat sect = - hOffset / 3;
-    [UIView animateWithDuration:0.25
-                          delay:0 
-                        options:UIViewAnimationCurveEaseOut
-                     animations:^
-     {
-         [view setAnimationPercent:(sect / rect.size.height)];
-     } completion:^(BOOL finished) 
-     {
-         if (finished) {
-             [UIView animateWithDuration:0.13
-                                   delay:0
-                                 options:UIViewAnimationCurveEaseInOut
-                              animations:^
-              {
-                  [view setAnimationPercent:0];
-              } completion:^(BOOL finished) 
-              {
+    [view restoreAndShake:^(BOOL finish) {
+        [self releaseAnimation];
+    }];
+}
+
+- (void)resetNowViewEx:(NSInteger)index
+{
+    MTFlipAnimationView *view = [self getDragingView:index];
+    MTFlipAnimationView *uv = [self getDragingView:index - 1];
+    MTFlipAnimationView *dv = [self getDragingView:index + 1];
+    [view restoreUp:uv
+               down:dv
+              block:^(BOOL finish) {
                   [self releaseAnimation];
               }];
-         }else {
-             [self releaseAnimation];
-         }
-     }];
-}
-
-- (void)resetNowViewEx:(UIView *)view
-{
-    CGRect rect = self.bounds;
-    CGPoint p;
-    if (self.state == FZDragFlipStateNormal) {
-        p = CGPointMake(rect.size.width / 2 + rect.origin.x,
-                        rect.size.height / 2 + rect.origin.y);
-    }else {
-        p = CGPointMake(rect.size.width / 2 + rect.origin.x,
-                        rect.size.height / 2 + rect.origin.y + 44);
-    }
-    [UIView transitionWithView:view
-                      duration:0.4
-                       options:UIViewAnimationCurveEaseOut
-                    animations:^{
-                        view.center = p;
-                    } completion:^(BOOL finished) {
-                        [self releaseAnimation];
-                    }];
-}
-
-
-- (void)resetUpview:(UIView*)view
-{
-    CGRect rect = self.bounds;
-    CGPoint p = (CGPoint){rect.size.width / 2 + rect.origin.x,
-        -rect.size.height / 2 + rect.origin.y - 40};
-    [UIView transitionWithView:view
-                      duration:0.4
-                       options:UIViewAnimationCurveEaseOut
-                    animations:^{
-                        view.center = p;
-                    } completion:^(BOOL finished) {
-                        [self releaseAnimation];
-                    }];
 }
 
 - (void)openBackView:(UIView*)view
@@ -655,7 +569,7 @@ int count;
 
 - (void)resetLeftView
 {
-    CGRect rect = self.animationView.bounds,
+    CGRect rect = self.bounds,
     rect2 = self.frame;
     [UIView transitionWithView:self
                       duration:0.4
@@ -696,6 +610,8 @@ int count;
     [_transationView removeGestureRecognizer:_leftTapGesture];
 }
 
+#pragma mark - actions
+
 static NSTimeInterval __start;
 
 - (void)panndOn:(UIPanGestureRecognizer*)pan
@@ -725,26 +641,18 @@ static NSTimeInterval __start;
                         (_tempPoint.y - p.y > 20 && 
                          t2 - __start < 0.2)) {
                             _pageIndex ++;
-                            if ((_tempPoint.y - p.y > 20 && 
-                                 t2 - __start < 0.2)) {
-                                [self moveUpOut:[self getDragingView:_pageIndex - 1]];
-                            }else 
-                                [self moveUpOut:[self getDragingView:_pageIndex - 1]];
+                            [self moveUpOut:_pageIndex - 1];
                         }else {
-                            [self resetNowViewEx:[self getDragingView:_pageIndex]];
+                            [self resetNowViewEx:_pageIndex];
                         }
                 }else if (_state2 == 2) {
                     if (p.y - _tempPoint.y> height||
                         (p.y - _tempPoint.y > 20 && 
                          t2 - __start < 0.2)) {
                             _pageIndex --;
-                            if (p.y - _tempPoint.y > 20 && 
-                                t2 - __start < 0.2) {
-                                [self moveDownIn:[self getDragingView:_pageIndex]];
-                            }else 
-                                [self moveDownIn:[self getDragingView:_pageIndex]];
+                            [self moveDownIn:_pageIndex];
                         }else {
-                            [self resetUpview:[self getDragingView:_pageIndex - 1]];
+                            [self resetNowViewEx:_pageIndex];
                         }
                 }else if (_state2 == 4) {
                     if ([_delegate respondsToSelector:@selector(flipView:didDragToBorder:offset:)]) {
@@ -766,7 +674,7 @@ static NSTimeInterval __start;
             }else if (_state == 2){
                 if (_state2 == 2) {
                     NSTimeInterval t2 = [[NSDate date] timeIntervalSince1970];
-                    p = [pan locationInView:self.animationView];
+                    p = [pan locationInView:self];
                     if (_transationView.center.x < 0 ||
                         (_tempPoint.x - p.x > 20 && 
                          t2 - __start < 0.5)) {
@@ -776,7 +684,7 @@ static NSTimeInterval __start;
                         }
                 }else if (_state2 == 1) {
                     NSTimeInterval t2 = [[NSDate date] timeIntervalSince1970];
-                    p = [pan locationInView:self.animationView];
+                    p = [pan locationInView:self];
                     if (_transationView.center.x > 250 ||
                         (p.x - _tempPoint.x > 20 && 
                          t2 - __start < 0.5)) {
@@ -814,7 +722,7 @@ static NSTimeInterval __start;
                     if ([_delegate respondsToSelector:@selector(flipView:startDraging:)]) {
                         [_delegate flipView:self startDraging:_pageIndex];
                     }
-                    MTFlipAnimationView *nowView = [self getDragingView:_pageIndex];
+                    //MTFlipAnimationView *nowView = [self getDragingView:_pageIndex];
                     MTFlipAnimationView *upView = [self getDragingView:_pageIndex - 1];
                     if (upView && [_delegate respondsToSelector:@selector(flipView:reloadView:atIndex:)]) {
                         [_delegate flipView:self
@@ -831,17 +739,11 @@ static NSTimeInterval __start;
                     }
                     [self getDragingView:_pageIndex + 2];
                     [self getDragingView:_pageIndex + 3];
-                    
-                    
-                    [nowView setAnimationPercent:0];
-                    [upView setAnimationPercent:-1];
-                    [downView setAnimationPercent:0];
                 }else {
                     //左右
                     if (self.open) {
                         return;
                     }
-                    [_backgroundView removeFromSuperview];
                     _backContentView = [_delegate flipView:self 
                                              backgroudView:_pageIndex 
                                                       left:NO];
@@ -856,7 +758,7 @@ static NSTimeInterval __start;
                     
                     [self insertSubview:_leftView
                            belowSubview:_transationView];
-                    _tempPoint = [pan locationInView:self.animationView];
+                    _tempPoint = [pan locationInView:self];
                 }
             }
             
@@ -865,61 +767,52 @@ static NSTimeInterval __start;
                 CGFloat height = rect.size.height;
                 MTFlipAnimationView *nowView = [self getDragingView:_pageIndex];
                 MTFlipAnimationView *upView = [self getDragingView:_pageIndex - 1];
+                MTFlipAnimationView *downView = [self getDragingView:_pageIndex + 1];
+                [self _addViewToTransationAtIndex:_pageIndex];
                 [self getDragingView:_pageIndex + 1];
                 if (p.y > _tempPoint.y) {
                     if (_pageIndex > 0 /*&& (_state2 == 2 || _state2 == 0)*/) {
                         _state2 = 2;
-                        CGFloat p2 = -1-(_tempPoint.y - p.y) / height;
-                        [upView setAnimationPercent:p2];
-                        [nowView setAnimationPercent:0];
-                        _backgroundView.backgroundColor = _blackColor;
+                        CGFloat p2 = (_tempPoint.y - p.y) / height;
+                        [upView setAnimationPercent:p2 coverdView:nowView];
+                        [downView setPercent:1 isUp:NO isBorder:NO];
+                        _transationView.backgroundColor = _blackColor;
                         _bottomLabel.hidden = YES;
-                        [_transationView insertSubview:_backgroundView
-                                               atIndex:0];
+                        [self _addViewToTransationAtIndex:_pageIndex - 1];
                     }else if (_pageIndex <= 0 /*&& (_state2 == 4 || _state2 == 0)*/){
                         _state2 = 4;
-                        CGFloat p2 = (1 - (1+(_tempPoint.y - p.y) / height)) / 2;
-                        [nowView setAnimationPercent:p2];
+                        CGFloat p2 = (_tempPoint.y - p.y) / height;
+                        [nowView setPercent:p2 isUp:YES isBorder:YES];
                         
-                        _backgroundView.backgroundColor = m_backgroundColor;
+                        _transationView.backgroundColor = m_backgroundColor;
                         _topLabel.hidden = NO;
                         _bottomLabel.hidden = YES;
-                        [_transationView insertSubview:_backgroundView
-                                          belowSubview:nowView];
-                    }else {
-                        [upView setAnimationPercent:-1];
-                        [nowView setAnimationPercent:0];
+                        [self _removeViewNotIndex:_pageIndex];
                     }
                 }else if (p.y < _tempPoint.y) {
                     if (_pageIndex < _count - 1 /*&& (_state2 == 1 || _state2 == 0)*/) {
                         _state2 = 1;
-                        CGFloat p2 = (p.y - _tempPoint.y) / height;
-                        [upView setAnimationPercent:-1];
-                        [nowView setAnimationPercent:p2];
+                        CGFloat p2 = (_tempPoint.y - p.y) / height;
+                        [downView setAnimationPercent:p2 coverdView:nowView];
+                        [upView setPercent:-1 isUp:NO isBorder:NO];
                         
-                        _backgroundView.backgroundColor = _blackColor;
+                        [self _addViewToTransationAtIndex:_pageIndex + 1];
+                        _transationView.backgroundColor = _blackColor;
                         _bottomLabel.hidden = YES;
-                        [_transationView insertSubview:_backgroundView
-                                               atIndex:0];
                     }else if (_pageIndex >= _count - 1 /*&& (_state2 == 3 || _state2 == 0)*/){
                         _state2 = 3;
-                        CGFloat p2 = (p.y - _tempPoint.y) / height / 2;
-                        [upView setAnimationPercent:-1];
-                        [nowView setAnimationPercent:p2];
+                        CGFloat p2 = (_tempPoint.y - p.y) / height;
+                        [nowView setPercent:p2 isUp:NO isBorder:YES];
                         
-                        _backgroundView.backgroundColor = m_backgroundColor;
+                        [self _removeViewNotIndex:_pageIndex];
+                        _transationView.backgroundColor = m_backgroundColor;
                         _topLabel.hidden = YES;
                         _bottomLabel.hidden = NO;
-                        [_transationView insertSubview:_backgroundView
-                                          belowSubview:nowView];
-                    }else {
-                        [upView setAnimationPercent:-1];
-                        [nowView setAnimationPercent:0];
                     }
                 }
             }else {
                 CGRect rect2 = self.bounds;
-                p = [pan locationInView:self.animationView];
+                p = [pan locationInView:self];
                 
                 if (!_state2) {
                     if (p.x > _tempPoint.x && _leftView) {
@@ -978,7 +871,7 @@ static NSTimeInterval __start;
             if (i == 11) {
                 _bottomLabel.hidden = YES;
             }else if (i == 1){
-                CGRect rect = self.animationView.bounds;
+                CGRect rect = self.bounds;
                 self.layer.position = CGPointMake(20 - rect.size.width/ 2 + rect.origin.x,
                                                   rect.size.height / 2 + rect.origin.y);
             }else if (i == 2){
@@ -1002,7 +895,7 @@ static NSTimeInterval __start;
 
 - (BOOL)scrollViewShouldScrollToTop:(UIScrollView *)scrollView
 {
-    NSLog(@"touched at state bar");
+    //NSLog(@"touched at state bar");
     if (!_animationCount) {
         [self backToTop:YES];
     }else {
@@ -1176,7 +1069,7 @@ static NSTimeInterval __start;
         _bottomLabel.text = @"All items loaded";
     }else {
         UIActivityIndicatorView *actionvity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-        actionvity.center = CGPointMake(_bottomLabel.bounds.size.height / 2, _backgroundView.bounds.size.width / 2 - 50);
+        actionvity.center = CGPointMake(_bottomLabel.bounds.size.height / 2, _transationView.bounds.size.width / 2 - 50);
         actionvity.tag = 0x999;
         [_bottomLabel addSubview:actionvity];
         _bottomLabel.textColor = [UIColor colorWithRed:0.7 green:0 blue:0 alpha:1];
@@ -1287,6 +1180,57 @@ static NSTimeInterval __start;
 - (BOOL)open
 {
     return abs(_transationView.center.x - (self.bounds.size.width / 2)) > 2;
+}
+
+- (void)_addViewToTransationAtIndex:(NSInteger)index
+{
+    NSArray *subviews = _transationView.subviews;
+    UIView *nv = [self getDragingView:index];
+    UIView *uv = [self getDragingView:index - 1];
+    UIView *dv = [self getDragingView:index + 1];
+    if ([subviews containsObject:uv]) {
+        if (_type == MTFlipViewTypeUpAbove)[_transationView insertSubview:nv belowSubview:uv];
+        else if (_type == MTFlipViewTypeDownAbove)[_transationView insertSubview:nv aboveSubview:uv];
+        else {
+            if (index > _pageIndex) {
+                [_transationView insertSubview:nv belowSubview:uv];
+            }else if (index < _pageIndex) {
+                [_transationView insertSubview:nv aboveSubview:uv];
+            }else[_transationView addSubview:nv];
+        }
+    }else if ([subviews containsObject:dv]) {
+        if (_type == MTFlipViewTypeUpAbove)[_transationView insertSubview:nv aboveSubview:dv];
+        else if (_type == MTFlipViewTypeDownAbove)[_transationView insertSubview:nv belowSubview:dv];
+        else {
+            if (index > _pageIndex) {
+                [_transationView insertSubview:nv aboveSubview:dv];
+            }else if (index < _pageIndex) {
+                [_transationView insertSubview:nv belowSubview:dv];
+            }else[_transationView addSubview:nv];
+        }
+    }else {
+        [_transationView addSubview:nv];
+    }
+}
+
+- (void)_removeViewAtIndex:(NSInteger)index
+{
+    NSArray *subviews = _transationView.subviews;
+    UIView *nv = [self getDragingView:index];
+    if ([subviews containsObject:nv]) {
+        [nv removeFromSuperview];
+    }
+}
+
+- (void)_removeViewNotIndex:(NSInteger)index
+{
+    NSArray *subviews = _transationView.subviews;
+    UIView *nv = [self getDragingView:index];
+    for (UIView *subview in subviews) {
+        if ([subview isKindOfClass:[MTFlipAnimationView class]] && subview != nv) {
+            [subview removeFromSuperview];
+        }
+    }
 }
 
 @end
