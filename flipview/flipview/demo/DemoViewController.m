@@ -21,7 +21,6 @@
     DemoMenuViewController  *_menuController;
     MTDragFlipView  *_flipView;
     DemoShowView    *_showerView;
-    NSArray *_views;
 }
 
 @synthesize model = _model;
@@ -52,7 +51,6 @@
     
     _showerView = [[DemoShowView alloc] initWithFrame:CGRectMake(0, 0, 320, 416)];
     [_flipView reloadData];
-    _flipView.loadAll = YES;
     
     _menuController = [[DemoMenuViewController alloc] initWithStyle:UITableViewStylePlain];
 }
@@ -62,7 +60,7 @@
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     _flipView = nil;
-    _views = nil;
+    _showerView = nil;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation

@@ -27,6 +27,7 @@
 		5F171FAA15B40DD10027E6A2 /* DemoMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F171FA915B40DD00027E6A2 /* DemoMenuViewController.m */; };
 		5F4B575C15B6A7120025CBA2 /* Demo2ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4B575B15B6A7120025CBA2 /* Demo2ViewController.m */; };
 		5F4B575F15B6B5000025CBA2 /* DemoSelecterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4B575E15B6B4FF0025CBA2 /* DemoSelecterViewController.m */; };
+		5F6F33A715B79D4C0038F437 /* Demo2AnimationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F6F33A615B79D4C0038F437 /* Demo2AnimationView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -64,6 +65,8 @@
 		5F4B575B15B6A7120025CBA2 /* Demo2ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Demo2ViewController.m; sourceTree = "<group>"; };
 		5F4B575D15B6B4FF0025CBA2 /* DemoSelecterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DemoSelecterViewController.h; sourceTree = "<group>"; };
 		5F4B575E15B6B4FF0025CBA2 /* DemoSelecterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DemoSelecterViewController.m; sourceTree = "<group>"; };
+		5F6F33A515B79D4C0038F437 /* Demo2AnimationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Demo2AnimationView.h; sourceTree = "<group>"; };
+		5F6F33A615B79D4C0038F437 /* Demo2AnimationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Demo2AnimationView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -173,6 +176,8 @@
 			children = (
 				5F4B575A15B6A7120025CBA2 /* Demo2ViewController.h */,
 				5F4B575B15B6A7120025CBA2 /* Demo2ViewController.m */,
+				5F6F33A515B79D4C0038F437 /* Demo2AnimationView.h */,
+				5F6F33A615B79D4C0038F437 /* Demo2AnimationView.m */,
 			);
 			path = demo2;
 			sourceTree = "<group>";
@@ -253,6 +258,7 @@
 				5F171FAA15B40DD10027E6A2 /* DemoMenuViewController.m in Sources */,
 				5F4B575C15B6A7120025CBA2 /* Demo2ViewController.m in Sources */,
 				5F4B575F15B6B5000025CBA2 /* DemoSelecterViewController.m in Sources */,
+				5F6F33A715B79D4C0038F437 /* Demo2AnimationView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -7,7 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "DemoModel.h"
 
 @interface Demo2ViewController : UIViewController
+
+@property (nonatomic, strong)   DemoModel   *model;
 
 @end

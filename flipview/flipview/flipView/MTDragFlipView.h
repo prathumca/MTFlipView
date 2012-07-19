@@ -58,9 +58,7 @@ typedef enum {
 @property (nonatomic, readonly) NSInteger   count;
 //背景颜色
 @property (nonatomic, strong)   UIColor     *backgroundColor;
-@property (nonatomic, readonly) UILabel     *bottomLabel,
-                                            *topLabel;
-@property (nonatomic, assign)   BOOL        loadAll, dragEnable;
+@property (nonatomic, assign)   BOOL        dragEnable;
 
 // is opened background view or not.
 @property (nonatomic, readonly) BOOL        open;
@@ -87,7 +85,6 @@ typedef enum {
 - (void)reloadCount;
 
 - (void)clean;
-- (void)load;
 - (void)load:(NSInteger)page;
 //if use this methord you must implementation - (MTFlipAnimationView*)flipViewPrePushDragingView:(FZDragFlipView *)flipView
 - (void)preload:(NSInteger)count;

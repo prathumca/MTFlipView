@@ -12,7 +12,9 @@
 
 typedef void(^MTFlipAnimationOverBlock)(BOOL finish);
 
-@interface MTFlipAnimationView : UIView
+@interface MTFlipAnimationView : UIView {
+    UIImageView *_imageView;
+}
 
 @property (nonatomic, readonly) UIImageView *imageView;
 @property (nonatomic, strong)   NSString    *indentify;

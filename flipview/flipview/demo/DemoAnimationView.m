@@ -59,7 +59,24 @@ static UILabel  *__label;
 {
     // Drawing code
 }
-*/
+ */
+
+
+/*-----------------------------------------------------
+ *  when do over set data, call startRender it will 
+ *  asynchronous render it.
+ *-----------------------------------------------------
+ */
+- (void)setText:(NSString *)text
+{
+    _text = text;
+    void (^block)(CGContextRef context) = ^(CGContextRef context){
+        CGContextTranslateCTM(context, __label.frame.origin.x, __label.frame.origin.y);
+        __label.text = text;
+        [__label.layer renderInContext:context];
+    };
+    [self startRender:block];
+}
 
 - (void)setAnimationPercent:(CGFloat)percent coverdView:(MTFlipAnimationView *)coverdView
 {
@@ -97,17 +114,6 @@ static UILabel  *__label;
         }
     }
     self.frame = (CGRect){0, bounds.size.height * percent, bounds.size};
-}
-
-- (void)setText:(NSString *)text
-{
-    _text = text;
-    void (^block)(CGContextRef context) = ^(CGContextRef context){
-        CGContextTranslateCTM(context, __label.frame.origin.x, __label.frame.origin.y);
-        __label.text = text;
-        [__label.layer renderInContext:context];
-    };
-    [self startRender:block];
 }
 
 #pragma mark - override

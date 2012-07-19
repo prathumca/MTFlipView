@@ -55,8 +55,7 @@ int count;
 
 @synthesize delegate = _delegate, pageIndex = _pageIndex;
 @synthesize backgroundColor = m_backgroundColor;
-@synthesize topLabel = _topLabel, type = _type;
-@synthesize bottomLabel = _bottomLabel, loadAll = _loadAll;
+@synthesize type = _type;
 @synthesize count = _count;
 @synthesize dragEnable = _dragEnable;
 
@@ -80,26 +79,7 @@ int count;
         _mainPanGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self
                                                                   action:@selector(panndOn:)];
         [self addGestureRecognizer:_mainPanGesture];
-        
-        _bottomLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, self.bounds.size.height - 30, self.bounds.size.width, 15)];
-        _bottomLabel.backgroundColor = [UIColor clearColor];
-        _bottomLabel.textColor = [UIColor whiteColor];
-        _bottomLabel.textAlignment = UITextAlignmentCenter;
-        _bottomLabel.text = @"";
-        _bottomLabel.font = [UIFont boldSystemFontOfSize:15];
-        _bottomLabel.shadowColor = [UIColor colorWithWhite:0 alpha:0.6];
-        _bottomLabel.shadowOffset = CGSizeMake(0, 1);
-        
-        
-        _topLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 15, self.bounds.size.width, 15)];
-        _topLabel.backgroundColor = [UIColor clearColor];
-        _topLabel.textColor = [UIColor whiteColor];
-        _topLabel.textAlignment = UITextAlignmentCenter;
-        _topLabel.text = @"";
-        _topLabel.font = [UIFont boldSystemFontOfSize:15];
-        _topLabel.shadowColor = [UIColor colorWithWhite:0 alpha:0.6];
-        _topLabel.shadowOffset = CGSizeMake(0, 1);
-        
+                
         _leftTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self
                                                                   action:@selector(clickLeft:)];
         
@@ -153,7 +133,6 @@ int count;
 - (void)setFrame:(CGRect)frame
 {
     [super setFrame:frame];
-    _bottomLabel.frame = CGRectMake(0, self.bounds.size.height - 15, self.bounds.size.width, 15);
     _transationView.frame = self.bounds;
 }
 
@@ -290,6 +269,8 @@ int count;
     self.userInteractionEnabled = YES;
 }
 
+#pragma mark - back to top
+
 #define kTimeAdd        0.1
 #define kBaseDurationK  0.4
 #define kBaseDurationS  0.32
@@ -383,6 +364,7 @@ int count;
         _transationView.hidden = NO;
     }else {
         //无动画,有需要再写吧
+        self.pageIndex = 0;
     }
     _pageIndex = 0;
 }
@@ -739,6 +721,9 @@ static NSTimeInterval __start;
                     }
                     [self getDragingView:_pageIndex + 2];
                     [self getDragingView:_pageIndex + 3];
+                    [self _addViewToTransationAtIndex:_pageIndex];
+                    [self _addViewToTransationAtIndex:_pageIndex - 1];
+                    [self _addViewToTransationAtIndex:_pageIndex + 1];
                 }else {
                     //左右
                     if (self.open) {
@@ -768,7 +753,6 @@ static NSTimeInterval __start;
                 MTFlipAnimationView *nowView = [self getDragingView:_pageIndex];
                 MTFlipAnimationView *upView = [self getDragingView:_pageIndex - 1];
                 MTFlipAnimationView *downView = [self getDragingView:_pageIndex + 1];
-                [self _addViewToTransationAtIndex:_pageIndex];
                 [self getDragingView:_pageIndex + 1];
                 if (p.y > _tempPoint.y) {
                     if (_pageIndex > 0 /*&& (_state2 == 2 || _state2 == 0)*/) {
@@ -777,16 +761,12 @@ static NSTimeInterval __start;
                         [upView setAnimationPercent:p2 coverdView:nowView];
                         [downView setPercent:1 isUp:NO isBorder:NO];
                         _transationView.backgroundColor = _blackColor;
-                        _bottomLabel.hidden = YES;
-                        [self _addViewToTransationAtIndex:_pageIndex - 1];
                     }else if (_pageIndex <= 0 /*&& (_state2 == 4 || _state2 == 0)*/){
                         _state2 = 4;
                         CGFloat p2 = (_tempPoint.y - p.y) / height;
                         [nowView setPercent:p2 isUp:YES isBorder:YES];
                         
                         _transationView.backgroundColor = m_backgroundColor;
-                        _topLabel.hidden = NO;
-                        _bottomLabel.hidden = YES;
                         [self _removeViewNotIndex:_pageIndex];
                     }
                 }else if (p.y < _tempPoint.y) {
@@ -796,9 +776,7 @@ static NSTimeInterval __start;
                         [downView setAnimationPercent:p2 coverdView:nowView];
                         [upView setPercent:-1 isUp:NO isBorder:NO];
                         
-                        [self _addViewToTransationAtIndex:_pageIndex + 1];
                         _transationView.backgroundColor = _blackColor;
-                        _bottomLabel.hidden = YES;
                     }else if (_pageIndex >= _count - 1 /*&& (_state2 == 3 || _state2 == 0)*/){
                         _state2 = 3;
                         CGFloat p2 = (_tempPoint.y - p.y) / height;
@@ -806,8 +784,6 @@ static NSTimeInterval __start;
                         
                         [self _removeViewNotIndex:_pageIndex];
                         _transationView.backgroundColor = m_backgroundColor;
-                        _topLabel.hidden = YES;
-                        _bottomLabel.hidden = NO;
                     }
                 }
             }else {
@@ -869,7 +845,6 @@ static NSTimeInterval __start;
             _state = 0;
             _animation = NO;
             if (i == 11) {
-                _bottomLabel.hidden = YES;
             }else if (i == 1){
                 CGRect rect = self.bounds;
                 self.layer.position = CGPointMake(20 - rect.size.width/ 2 + rect.origin.x,
@@ -1014,6 +989,7 @@ static NSTimeInterval __start;
             [_cachedImageViews removeObject:view];
         }
     }
+    [_unuseViews removeAllObjects];
 }
 
 - (void)load
@@ -1053,28 +1029,6 @@ static NSTimeInterval __start;
     view = [self getDragingView:_pageIndex - 2];
     view = [self getDragingView:_pageIndex + 1];
     view = [self getDragingView:_pageIndex + 2];
-}
-
-- (void)load:(NSInteger)page
-{
-    [self load];
-}
-
-- (void)setLoadAll:(BOOL)loadAll
-{
-    _loadAll = loadAll;
-    if (_loadAll) {
-        [[_bottomLabel viewWithTag:0x999] removeFromSuperview];
-        _bottomLabel.textColor = [UIColor colorWithWhite:0.7 alpha:1];
-        _bottomLabel.text = @"All items loaded";
-    }else {
-        UIActivityIndicatorView *actionvity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-        actionvity.center = CGPointMake(_bottomLabel.bounds.size.height / 2, _transationView.bounds.size.width / 2 - 50);
-        actionvity.tag = 0x999;
-        [_bottomLabel addSubview:actionvity];
-        _bottomLabel.textColor = [UIColor colorWithRed:0.7 green:0 blue:0 alpha:1];
-        _bottomLabel.text = @"Loading...";
-    }
 }
 
 - (void)loadByNumber:(NSNumber*)number

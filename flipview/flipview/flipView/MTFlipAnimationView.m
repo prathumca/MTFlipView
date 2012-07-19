@@ -8,7 +8,7 @@
 
 #import "MTFlipAnimationView.h"
 
-static NSOperationQueue *__queue;
+static NSMutableDictionary *__queueCache;
 
 @implementation MTFlipAnimationView
 {
@@ -28,6 +28,11 @@ static NSOperationQueue *__queue;
     return self;
 }
 
+- (void)setFrame:(CGRect)frame
+{
+    [super setFrame:frame];
+    _imageView.frame = self.bounds;
+}
 
 - (void)clean{
     [_operation cancel];
@@ -39,12 +44,18 @@ static NSOperationQueue *__queue;
 
 - (NSOperationQueue*)mainQueue
 {
-    if (!__queue) {
-        __queue = [[NSOperationQueue alloc] init];
-        __queue.maxConcurrentOperationCount = 4;
-        [__queue setSuspended:NO];
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        __queueCache = [[NSMutableDictionary alloc] init];
+    });
+    NSOperationQueue *queue = [__queueCache objectForKey:NSStringFromClass([self class])];
+    if (!queue) {
+        queue = [[NSOperationQueue alloc] init];
+        queue.maxConcurrentOperationCount = 4;
+        [queue setSuspended:NO];
+        [__queueCache setObject:queue forKey:NSStringFromClass([self class])];
     }
-    return __queue;
+    return queue;
 }
 
 - (void)startRender:(MTBlockOperationBlock)block
@@ -54,7 +65,7 @@ static NSOperationQueue *__queue;
     [operation setCompleteBlock:^(UIImage *image) {
         [self renderedImage:image];
     }];
-    operation.size = _imageView.bounds.size;
+    operation.size = self.bounds.size;
     [self.mainQueue addOperation:operation];
     _operation = operation;
 }
