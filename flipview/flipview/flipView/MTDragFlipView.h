@@ -41,7 +41,7 @@ typedef enum {
                     _change,
                     _willBackToTop,
                     _willToReload;
-    //receive the top tap event.
+    // using to receive the top tap event.
     UIScrollView    *_scrollView;
     UIPanGestureRecognizer  *_backPanGesture,
                             *_mainPanGesture,
@@ -64,6 +64,7 @@ typedef enum {
 
 // is opened background view or not.
 @property (nonatomic, readonly) BOOL        open;
+@property (nonatomic, assign)   NSTimeInterval  animationInterval;
 
 //到顶部
 // back to top

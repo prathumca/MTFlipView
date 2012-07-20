@@ -27,6 +27,7 @@
 @synthesize backgroundColor = m_backgroundColor;
 @synthesize type = _type, count = _count;
 @synthesize dragEnable = _dragEnable;
+@synthesize animationInterval = _animationInterval;
 
 - (id)initWithType:(MTFlipViewType)type
 {
@@ -86,6 +87,8 @@
         imageView.image = [UIImage imageNamed:@"bg_detail_panelshadow"];
         imageView.layer.transform = CATransform3DMakeScale(-1, 1, 1);
         [_transationView addSubview:imageView];
+        
+        _animationInterval = 0.1f;
     }
     return self;
 }
@@ -254,7 +257,6 @@
     [self reloadData];
 }
 
-#define kTimeAdd        0.2
 #define kBaseDurationK  0.4
 #define kBaseDurationS  0.32
 #define kDistanceAdd    100
@@ -329,7 +331,7 @@
             if (n == t - 1) {
                 break;
             }
-            CGFloat timeAdd = kTimeAdd * count;
+            CGFloat timeAdd = _animationInterval * count;
             NSMutableDictionary *dic = [NSMutableDictionary dictionaryWithObjectsAndKeys:
                                         view, @"view", preview, @"preview", 
                                         nextview, @"nextview",nil];
@@ -583,7 +585,7 @@
 
 #pragma mark - aniamtions
 
-- (void)turnPrevWithOriginalIndex:(NSInteger)index
+- (void)turnNextWithOriginalIndex:(NSInteger)index
 {
     MTFlipAnimationView *view = [self getDragingView:index];
     [view turnNextPreview:[self getDragingView:index - 1]
@@ -594,7 +596,7 @@
 }
 
 
-- (void)turnNextWithOriginalIndex:(NSInteger)index
+- (void)turnPrevWithOriginalIndex:(NSInteger)index
 {
     MTFlipAnimationView *view = [self getDragingView:index];
     [view turnPreviousPreview:[self getDragingView:index - 1]

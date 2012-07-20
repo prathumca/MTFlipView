@@ -43,6 +43,7 @@
     _flipView.frame = CGRectMake(0, 0, 320, 416);
     _flipView.delegate = self;
     _flipView.backgroundColor = [UIColor grayColor];
+    _flipView.animationInterval = 0.2;
     [self.view addSubview:_flipView];
     
     _showView = [[DemoShowView alloc] initWithFrame:CGRectMake(0, 0, 320, 416)];

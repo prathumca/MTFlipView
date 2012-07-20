@@ -113,11 +113,11 @@ static UILabel  *__label;
         }
         percent = -percent / 2;
     }else {
-        if (percent == 1) {
-            percent = -1.1;
-        }
         if (percent < 0) {
             percent = 0;
+        }
+        if (percent == 1) {
+            percent = -1.1;
         }
     }
     self.frame = (CGRect){0, bounds.size.height * percent, bounds.size};
