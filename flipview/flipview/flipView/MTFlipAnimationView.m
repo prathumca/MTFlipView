@@ -77,13 +77,22 @@ static NSMutableDictionary *__queueCache;
 
 
 - (void)setPercent:(CGFloat)percent isUp:(BOOL)up isBorder:(BOOL)border{}
-- (void)setAnimationPercent:(CGFloat)percent coverdView:(MTFlipAnimationView *)coverdView{}
+- (void)setAnimationPercent:(CGFloat)percent
+                    preview:(MTFlipAnimationView *)preview
+                   nextview:(MTFlipAnimationView *)nextview{}
 
-- (void)moveUpOut:(MTFlipAnimationOverBlock)block coverdView:(MTFlipAnimationView *)coverdView{}
-- (void)moveDownIn:(MTFlipAnimationOverBlock)block coverdView:(MTFlipAnimationView *)coverdView{}
-- (void)restoreUp:(MTFlipAnimationView*)up
-             down:(MTFlipAnimationView*)down
-            block:(MTFlipAnimationOverBlock)block{}
+- (void)turnNextPreview:(MTFlipAnimationView *)preview 
+               nextview:(MTFlipAnimationView *)nextview
+              overblock:(MTFlipAnimationOverBlock)overblock{}
+
+- (void)turnPreviousPreview:(MTFlipAnimationView *)preview 
+                   nextview:(MTFlipAnimationView *)nextview 
+                  overblock:(MTFlipAnimationOverBlock)overblock{}
+
+- (void)restorePreview:(MTFlipAnimationView *)preview
+              nextview:(MTFlipAnimationView *)nextview 
+             overblock:(MTFlipAnimationOverBlock)overblock{}
+
 - (void)restoreAndShake:(MTFlipAnimationOverBlock)block{}
 
 @end

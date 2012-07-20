@@ -167,7 +167,7 @@ int count;
     if (animation) {
         _transationView.hidden = NO;
         [self retainAnimation];
-        [self moveUpOut:_pageIndex];
+        [self moveUpOut:_pageIndex - 1];
     }else {
         NSArray *array = self.subviews;
         for (UIView *view in array) {
@@ -347,12 +347,17 @@ int count;
             if (0 == n) {
                 [view setPercent:0 isUp:NO isBorder:NO];
             }else {
-                [view setPercent:- 1 isUp:NO isBorder:NO];
+                [view setPercent:-1 isUp:NO isBorder:NO];
                 CGFloat timeAdd = kTimeAdd * count;
-                UIView *viewPre = [aniamtionArr objectAtIndex:n - 1];
+                UIView *nextview = [aniamtionArr objectAtIndex:n - 1];
+                UIView *preview = nil;
+                if (n < t - 1) {
+                    preview = [aniamtionArr objectAtIndex:n + 1];
+                }
                 [self performSelector:@selector(animationHandle:)
                            withObject:[NSDictionary dictionaryWithObjectsAndKeys:
-                                       view, @"view", viewPre, @"viewpre", nil]
+                                       view, @"view", preview, @"preview", 
+                                       nextview, @"nextview",nil]
                            afterDelay:timeAdd];
                 count ++;
             }
@@ -372,9 +377,11 @@ int count;
 - (void)animationHandle:(NSDictionary*)dic
 {
     MTFlipAnimationView *view = [dic objectForKey:@"view"],
-                        *viewpre = [dic objectForKey:@"viewpre"];
-    [view moveDownIn:nil
-          coverdView:viewpre];
+                        *preview = [dic objectForKey:@"preview"],
+                        *nextview = [dic objectForKey:@"nextview"];
+    [view turnPreviousPreview:preview
+                     nextview:nextview
+                    overblock:nil];
 }
 
 - (void)setTAnimation:(NSMutableArray*)array
@@ -475,19 +482,22 @@ int count;
 - (void)moveUpOut:(NSInteger)index
 {
     MTFlipAnimationView *view = [self getDragingView:index];
-    [view moveUpOut:^(BOOL finish) {
-        [self releaseAnimation];
-    } coverdView:[self getDragingView:index + 1]];
+    [view turnNextPreview:[self getDragingView:index - 1]
+                 nextview:[self getDragingView:index + 1]
+                overblock:^(BOOL finish) {
+                    [self releaseAnimation];
+                }];
 }
 
 
 - (void)moveDownIn:(NSInteger)index
 {
     MTFlipAnimationView *view = [self getDragingView:index];
-    MTFlipAnimationView *nextVIew = [self getDragingView:index + 1];
-    [view moveDownIn:^(BOOL finish) {
-        [self releaseAnimation];
-    } coverdView:nextVIew];
+    [view turnPreviousPreview:[self getDragingView:index - 1]
+                     nextview:[self getDragingView:index + 1]
+                    overblock:^(BOOL finish) {
+                        [self releaseAnimation];
+                    }];
 }
 
 - (void)resetNowView:(MTFlipAnimationView*)view
@@ -500,13 +510,11 @@ int count;
 - (void)resetNowViewEx:(NSInteger)index
 {
     MTFlipAnimationView *view = [self getDragingView:index];
-    MTFlipAnimationView *uv = [self getDragingView:index - 1];
-    MTFlipAnimationView *dv = [self getDragingView:index + 1];
-    [view restoreUp:uv
-               down:dv
-              block:^(BOOL finish) {
-                  [self releaseAnimation];
-              }];
+    [view restorePreview:[self getDragingView:index - 1]
+                nextview:[self getDragingView:index + 1]
+               overblock:^(BOOL finish) {
+                   [self releaseAnimation];
+               }];
 }
 
 - (void)openBackView:(UIView*)view
@@ -632,7 +640,7 @@ static NSTimeInterval __start;
                         (p.y - _tempPoint.y > 20 && 
                          t2 - __start < 0.2)) {
                             _pageIndex --;
-                            [self moveDownIn:_pageIndex];
+                            [self moveDownIn:_pageIndex + 1];
                         }else {
                             [self resetNowViewEx:_pageIndex];
                         }
@@ -737,6 +745,7 @@ static NSTimeInterval __start;
                                        backgroudView:_pageIndex
                                                 left:YES];
                     [self getDragingView:_pageIndex];
+                    [self _addViewToTransationAtIndex:_pageIndex];
                     [self retainAnimation];
                     [self insertSubview:_backContentView 
                            belowSubview:_transationView];
@@ -758,8 +767,9 @@ static NSTimeInterval __start;
                     if (_pageIndex > 0 /*&& (_state2 == 2 || _state2 == 0)*/) {
                         _state2 = 2;
                         CGFloat p2 = (_tempPoint.y - p.y) / height;
-                        [upView setAnimationPercent:p2 coverdView:nowView];
-                        [downView setPercent:1 isUp:NO isBorder:NO];
+                        [nowView setAnimationPercent:p2
+                                             preview:upView
+                                            nextview:downView];
                         _transationView.backgroundColor = _blackColor;
                     }else if (_pageIndex <= 0 /*&& (_state2 == 4 || _state2 == 0)*/){
                         _state2 = 4;
@@ -773,8 +783,9 @@ static NSTimeInterval __start;
                     if (_pageIndex < _count - 1 /*&& (_state2 == 1 || _state2 == 0)*/) {
                         _state2 = 1;
                         CGFloat p2 = (_tempPoint.y - p.y) / height;
-                        [downView setAnimationPercent:p2 coverdView:nowView];
-                        [upView setPercent:-1 isUp:NO isBorder:NO];
+                        [nowView setAnimationPercent:p2
+                                              preview:upView
+                                             nextview:downView];
                         
                         _transationView.backgroundColor = _blackColor;
                     }else if (_pageIndex >= _count - 1 /*&& (_state2 == 3 || _state2 == 0)*/){
@@ -957,6 +968,7 @@ static NSTimeInterval __start;
         }else {
             [self getDragingView:_pageIndex];
         }
+        [self _addViewToTransationAtIndex:_pageIndex];
         if (!_backContentView) {
             return;
         }

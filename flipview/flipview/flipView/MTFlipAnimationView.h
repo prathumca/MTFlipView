@@ -38,14 +38,21 @@ typedef void(^MTFlipAnimationOverBlock)(BOOL finish);
               isUp:(BOOL)up 
           isBorder:(BOOL)border;
 - (void)setAnimationPercent:(CGFloat)percent 
-                 coverdView:(MTFlipAnimationView*)coverdView;
-- (void)moveUpOut:(MTFlipAnimationOverBlock)block 
-       coverdView:(MTFlipAnimationView*)coverdView;
-- (void)moveDownIn:(MTFlipAnimationOverBlock)block 
-        coverdView:(MTFlipAnimationView*)coverdView;
-- (void)restoreUp:(MTFlipAnimationView*)up
-             down:(MTFlipAnimationView*)down
-            block:(MTFlipAnimationOverBlock)block;
+                    preview:(MTFlipAnimationView*)preview
+                   nextview:(MTFlipAnimationView*)nextview;
+
+- (void)turnPreviousPreview:(MTFlipAnimationView*)preview 
+                   nextview:(MTFlipAnimationView*)nextview
+                  overblock:(MTFlipAnimationOverBlock)overblock;
+
+- (void)turnNextPreview:(MTFlipAnimationView*)preview 
+               nextview:(MTFlipAnimationView*)nextview
+              overblock:(MTFlipAnimationOverBlock)overblock;
+
+- (void)restorePreview:(MTFlipAnimationView*)preview
+              nextview:(MTFlipAnimationView*)nextview
+             overblock:(MTFlipAnimationOverBlock)overblock;
+
 - (void)restoreAndShake:(MTFlipAnimationOverBlock)block;
 
 @end

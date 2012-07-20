@@ -78,17 +78,22 @@ static UILabel  *__label;
     [self startRender:block];
 }
 
-- (void)setAnimationPercent:(CGFloat)percent coverdView:(MTFlipAnimationView *)coverdView
+- (void)setAnimationPercent:(CGFloat)percent
+                    preview:(MTFlipAnimationView *)preview
+                   nextview:(MTFlipAnimationView *)nextview
 {
     CGRect bounds = self.bounds;
     CGFloat tp = 0;
     if (percent > 0) {
         tp = -percent;
-        coverdView.frame = (CGRect){0, bounds.size.height * tp, bounds.size};
-        self.frame = (CGRect){0,0,bounds.size};
+        preview.frame = (CGRect){0, bounds.size.height * -1.1, bounds.size};
+        self.frame = (CGRect){0, bounds.size.height * tp, bounds.size};
+        nextview.frame = (CGRect){0,0,bounds.size};
     }else if (percent < 0){
         tp = -percent - 1;
-        self.frame = (CGRect){0, bounds.size.height * tp, bounds.size};
+        preview.frame = (CGRect){0, bounds.size.height * tp, bounds.size};
+        self.frame = (CGRect){0,0, bounds.size};
+        nextview.frame = (CGRect){0,0,bounds.size};
     }else {
         self.frame = (CGRect){0,0,bounds.size};
     }
@@ -118,8 +123,9 @@ static UILabel  *__label;
 
 #pragma mark - override
 
-- (void)moveUpOut:(MTFlipAnimationOverBlock)block 
-       coverdView:(MTFlipAnimationView *)coverdView{
+- (void)turnNextPreview:(MTFlipAnimationView *)preview 
+               nextview:(MTFlipAnimationView *)nextview 
+              overblock:(MTFlipAnimationOverBlock)overblock{
     [UIView transitionWithView:self
                       duration:0.4
                        options:UIViewAnimationCurveLinear
@@ -127,36 +133,37 @@ static UILabel  *__label;
                         CGRect bounds = self.bounds;
                         self.frame = (CGRect){0, bounds.size.height * -1.1, bounds.size};
                     } completion:^(BOOL finished) {
-                        if (block) block(finished);
+                        if (overblock) overblock(finished);
                     }];
 }
 
-- (void)moveDownIn:(MTFlipAnimationOverBlock)block 
-        coverdView:(MTFlipAnimationView *)coverdView{
+- (void)turnPreviousPreview:(MTFlipAnimationView *)preview 
+                   nextview:(MTFlipAnimationView *)nextview
+                  overblock:(MTFlipAnimationOverBlock)overblock{
     [UIView transitionWithView:self
                       duration:0.4
                        options:UIViewAnimationCurveLinear
                     animations:^{
                         CGRect bounds = self.bounds;
-                        self.frame = (CGRect){0, 0, bounds.size};
+                        preview.frame = (CGRect){0, 0, bounds.size};
                     } completion:^(BOOL finished) {
-                        if (block) block(finished);
+                        if (overblock) overblock(finished);
                     }];
 }
 
-- (void)restoreUp:(MTFlipAnimationView*)up
-           down:(MTFlipAnimationView*)down
-          block:(MTFlipAnimationOverBlock)block{
+- (void)restorePreview:(MTFlipAnimationView *)preview 
+              nextview:(MTFlipAnimationView *)nextview
+             overblock:(MTFlipAnimationOverBlock)overblock{
     [UIView animateWithDuration:0.4
                           delay:0
                         options:UIViewAnimationCurveEaseOut
                      animations:^{
                          CGRect bounds = self.bounds;
                          self.frame = (CGRect){0, 0, bounds.size};
-                         up.frame = (CGRect){0,-bounds.size.height * 1.1,bounds.size};
+                         preview.frame = (CGRect){0,-bounds.size.height * 1.1,bounds.size};
                      } completion:^(BOOL finished) {
-                         if (block) {
-                             block(finished);
+                         if (overblock) {
+                             overblock(finished);
                          }
                      }];
 }
