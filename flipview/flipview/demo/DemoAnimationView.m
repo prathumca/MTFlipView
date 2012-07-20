@@ -78,6 +78,8 @@ static UILabel  *__label;
     [self startRender:block];
 }
 
+#pragma mark - override
+
 - (void)setAnimationPercent:(CGFloat)percent
                     preview:(MTFlipAnimationView *)preview
                    nextview:(MTFlipAnimationView *)nextview
@@ -99,7 +101,7 @@ static UILabel  *__label;
     }
 }
 
-- (void)setPercent:(CGFloat)percent isUp:(BOOL)up isBorder:(BOOL)border
+- (void)setPercent:(CGFloat)percent isBorder:(BOOL)border
 {
     CGRect bounds = self.bounds;
     if (border) {
@@ -111,17 +113,15 @@ static UILabel  *__label;
         }
         percent = -percent / 2;
     }else {
-        if (percent == -1) {
+        if (percent == 1) {
             percent = -1.1;
         }
-        if (percent > 0) {
+        if (percent < 0) {
             percent = 0;
         }
     }
     self.frame = (CGRect){0, bounds.size.height * percent, bounds.size};
 }
-
-#pragma mark - override
 
 - (void)turnNextPreview:(MTFlipAnimationView *)preview 
                nextview:(MTFlipAnimationView *)nextview 

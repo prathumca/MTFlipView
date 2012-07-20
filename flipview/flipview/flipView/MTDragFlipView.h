@@ -26,9 +26,9 @@ typedef enum {
 @interface MTDragFlipView : UIView 
 <UIScrollViewDelegate>{
     int             _state;         //0any ,1updown,2leftright
-    UIView          *_backContentView;
-    UIView          *_leftView;
-    UIView          *_transationView;
+    UIView          *_backRightView,
+                    *_backLeftView,
+                    *_transationView;
     NSMutableArray  *_cachedImageViews;
     FZRange         _cacheRange;
     UIColor         *_blackColor;       //消失颜色
@@ -41,11 +41,12 @@ typedef enum {
                     _change,
                     _willBackToTop,
                     _willToReload;
+    //receive the top tap event.
     UIScrollView    *_scrollView;
     UIPanGestureRecognizer  *_backPanGesture,
                             *_mainPanGesture,
-                            *_leftPanGesture;
-    UITapGestureRecognizer  *_leftTapGesture;
+                            *_transationViewPanGesture;
+    UITapGestureRecognizer  *_transationViewTapGesture;
     NSMutableDictionary     *_unuseViews;
 }
 
@@ -58,37 +59,42 @@ typedef enum {
 @property (nonatomic, readonly) NSInteger   count;
 //背景颜色
 @property (nonatomic, strong)   UIColor     *backgroundColor;
+
 @property (nonatomic, assign)   BOOL        dragEnable;
 
 // is opened background view or not.
 @property (nonatomic, readonly) BOOL        open;
 
 //到顶部
+// back to top
 - (void)backToTop:(BOOL)aniamted;
-//
-- (void)openBackgroudView;
+// 
+- (void)openBackView:(BOOL)isLeft;
 - (void)closeBackView;
 
 - (void)pushViewToCache:(MTFlipAnimationView*)view;
 
-- (MTFlipAnimationView*)getDragingView:(NSInteger)index;
-//缓存的UIImageView
+//  缓存的MTFlipAnimationView, using for reusing MTFlipAnimationView.
 - (MTFlipAnimationView*)imageViewWithIndex:(NSInteger)index;
-- (MTFlipAnimationView*)viewByIndentify:(NSString*)indentify;
+- (MTFlipAnimationView*)dequeueReusableViewWithIdentifier:(NSString*)indentifier;
 //把页面缓存的imageView
 - (void)viewToImage:(UIView*)view atIndex:(NSInteger)index;
 
 //重载所有页面
 - (void)reloadData;
 
-//加载更多时调用
+//  只读取总数，加载更多时调用。
+//  only reload the count, when the totle number changed but the view 
+//  content unchanged. ex: Load more.
 - (void)reloadCount;
 
+// using to manage memory
 - (void)clean;
-- (void)load:(NSInteger)page;
-//if use this methord you must implementation - (MTFlipAnimationView*)flipViewPrePushDragingView:(FZDragFlipView *)flipView
+- (void)load;
+//if use this methord you must implementation - flipViewPrePushDragingView:
 - (void)preload:(NSInteger)count;
 
+// turn the next page
 - (void)nextPage:(BOOL)animation;
 
 @end
@@ -96,27 +102,41 @@ typedef enum {
 @protocol MTDragFlipViewDelegate <NSObject>
 
 @required
-//返回在index的子页面
+//  返回在index的子页面, 可重用
+//  return the subview at index, can reuse.
 - (UIView*)flipView:(MTDragFlipView*)flipView subViewAtIndex:(NSInteger)index;
-//返回再index的后台页面
-- (UIView*)flipView:(MTDragFlipView*)flipView backgroudView:(NSInteger)index left:(BOOL)isLeft;
 
-//返回一共有多少个页面
+//  返回一共有多少个页面
+//  return number of subviews.
 - (NSInteger)numberOfFlipViewPage:(MTDragFlipView*)flipView;
 
+//  返回在index的动画页面，可使用-dequeueReusableViewWithIdentifier:
+//  来重用页面
+//  return the animation view at index, could reuse by using 
+//  -dequeueReusableViewWithIdentifier:
 - (MTFlipAnimationView*)flipView:(MTDragFlipView*)flipView dragingView:(NSInteger)index;
 
 
 @optional
-- (void)flipView:(MTDragFlipView*)flipView backgroudClosed:(NSInteger)index;
+
+//  invoked when close the back view at index.
+- (void)flipView:(MTDragFlipView*)flipView backViewClosed:(NSInteger)index;
+
+//  返回再index的后台页面
+//  return the back view at index. could reuse
+- (UIView*)flipView:(MTDragFlipView*)flipView 
+      backgroudView:(NSInteger)index 
+               left:(BOOL)isLeft;
 
 - (void)flipView:(MTDragFlipView *)flipView 
  didDragToBorder:(BOOL)isUp 
           offset:(CGFloat)offset;
 
-
+//  As named, invoked when start draging.
 - (void)flipView:(MTDragFlipView *)flipView startDraging:(NSInteger)index;
 
+//  used when the show view changed ,at this time we can reset
+//  the animation view with out -reloadCount
 - (void)flipView:(MTDragFlipView*)flipView 
       reloadView:(MTFlipAnimationView*)view
          atIndex:(NSInteger)index;

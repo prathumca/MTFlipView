@@ -8,17 +8,18 @@
 
 #import "Demo2AnimationView.h"
 #import <QuartzCore/QuartzCore.h>
+#import "Demo2FanView.h"
 
 @interface Demo2AnimationView()
 
-@property (nonatomic, readonly) UIImageView *upImageView,
-                                            *downImageView;
+@property (nonatomic, readonly) Demo2FanView    *upImageView,
+                                                *downImageView;
 
 @end
 
 @implementation Demo2AnimationView {
-    UIImageView *_upImageView,
-                *_downImageView;
+    Demo2FanView    *_upImageView,
+                    *_downImageView;
     CGFloat     _percent;
 }
 
@@ -43,10 +44,10 @@ static UILabel  *__label;
         //because of using global variables so it just suport one thread.
         self.mainQueue.maxConcurrentOperationCount = 1;
         
-        _upImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, frame.size.height / 4, 
+        _upImageView = [[Demo2FanView alloc] initWithFrame:CGRectMake(0, frame.size.height / 4, 
                                                                      frame.size.width,
                                                                      frame.size.height / 2)];
-        _downImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, frame.size.height / 4, 
+        _downImageView = [[Demo2FanView alloc] initWithFrame:CGRectMake(0, frame.size.height / 4, 
                                                                        frame.size.width, 
                                                                        frame.size.height / 2)];
     
@@ -56,15 +57,12 @@ static UILabel  *__label;
         _upImageView.backgroundColor = [UIColor blueColor];
         _upImageView.contentMode = UIViewContentModeTop;
         _upImageView.layer.anchorPoint = CGPointMake(0.5, 1);
-        _upImageView.layer.borderColor = [UIColor blackColor].CGColor;
-        _upImageView.layer.borderWidth = 1;
         _upImageView.clipsToBounds = YES;
-        _downImageView.backgroundColor = [UIColor redColor];
+        _downImageView.backgroundColor = [UIColor blueColor];
         _downImageView.contentMode = UIViewContentModeBottom;
         _downImageView.layer.anchorPoint = CGPointMake(0.5, 0);
-        _downImageView.layer.borderColor = [UIColor blackColor].CGColor;
-        _downImageView.layer.borderWidth = 1;
         _downImageView.clipsToBounds = YES;
+        _downImageView.coverLayer.transform = CATransform3DMakeScale(1, -1, 1);
         
         self->_imageView = nil;
         
@@ -117,36 +115,55 @@ static UILabel  *__label;
 
 
 - (void)setPercent:(CGFloat)percent 
-              isUp:(BOOL)up 
           isBorder:(BOOL)border
 {
     _percent = percent;
     if (border) {
-        percent = percent / 2;
+        percent = -percent / 2;
         CATransform3D transform = CATransform3DIdentity;
         transform.m34 = 0.001;
-        transform = CATransform3DRotate(transform,-M_PI * percent, 1, 0, 0);
+        transform = CATransform3DRotate(transform,M_PI * percent, 1, 0, 0);
+        _upImageView.hidden = NO;
+        _downImageView.hidden = NO;
         if (percent < 0) {
-            _upImageView.layer.transform = transform;
-            _downImageView.layer.transform = CATransform3DIdentity;
-        }else {
             _upImageView.layer.transform = CATransform3DIdentity;
+            [_upImageView setCoverOpacity:0];
             _downImageView.layer.transform = transform;
+            [_downImageView setCoverOpacity:-percent * 2];
+        }else {
+            _upImageView.layer.transform = transform;
+            [_upImageView setCoverOpacity:percent * 2];
+            _downImageView.layer.transform = CATransform3DIdentity;
+            [_downImageView setCoverOpacity:0];
         }
+        _percent = 0;
     }else {
         CATransform3D transform = CATransform3DIdentity;
         transform.m34 = 0.001;
-        CATransform3D transform2 = CATransform3DRotate(transform,-M_PI * percent, 1, 0, 0);
+        CATransform3D transform2 = CATransform3DRotate(transform,M_PI * percent, 1, 0, 0);
         if (percent < 0) {
-            _upImageView.layer.transform = CATransform3DIdentity;
-            if (percent > -0.5) 
-                _downImageView.layer.transform = transform2;
-            else _downImageView.hidden = YES;
-        }else {
             _downImageView.layer.transform = CATransform3DIdentity;
-            if (percent < 0.5) {
+            [_downImageView setCoverOpacity:0];
+            _downImageView.hidden = NO;
+            if (percent > 0.5) {
                 _upImageView.layer.transform = transform2;
+                [_upImageView setCoverOpacity:percent * 2];
             }else _upImageView.hidden = YES;
+        }else if (percent < 0){
+            _upImageView.hidden = NO;
+            _upImageView.layer.transform = CATransform3DIdentity;
+            [_upImageView setCoverOpacity:0];
+            if (percent < -0.5) {
+                _downImageView.layer.transform = transform2;
+                [_downImageView setCoverOpacity:-percent * 2];
+            }else _downImageView.hidden = YES;
+        }else {
+            _downImageView.hidden = NO;
+            _upImageView.hidden = NO;
+            _downImageView.layer.transform = CATransform3DIdentity;
+            _upImageView.layer.transform = CATransform3DIdentity;
+            [_downImageView setCoverOpacity:0];
+            [_upImageView setCoverOpacity:0];
         }
     }
 }
@@ -164,12 +181,15 @@ static UILabel  *__label;
             nextview.downImageView.hidden = NO;
             
             nextview.downImageView.layer.transform = CATransform3DIdentity;
+            [nextview.downImageView setCoverOpacity:0];
             _upImageView.layer.transform = CATransform3DIdentity;
+            [_upImageView setCoverOpacity:0];
             CATransform3D transform = CATransform3DIdentity;
             transform.m34 = 0.001;
             _downImageView.layer.transform = CATransform3DRotate(transform,-M_PI * percent, 1, 0, 0);
-            [self.superview insertSubview:self
-                             aboveSubview:nextview];
+            [_downImageView setCoverOpacity:percent * 2];
+            [self.superview insertSubview:nextview
+                             belowSubview:self];
         }else {
             nextview.upImageView.hidden = NO;
             nextview.downImageView.hidden = NO;
@@ -177,12 +197,15 @@ static UILabel  *__label;
             _downImageView.hidden = YES;
             
             _downImageView.layer.transform = CATransform3DIdentity;
+            [_downImageView setCoverOpacity:0];
             CATransform3D transform = CATransform3DIdentity;
             transform.m34 = 0.001;
             _upImageView.layer.transform = CATransform3DIdentity;
+            [_upImageView setCoverOpacity:0];
             nextview.upImageView.layer.transform = CATransform3DRotate(transform,M_PI * (1-percent), 1, 0, 0);
-            [self.superview insertSubview:nextview
-                             aboveSubview:self];
+            [nextview.upImageView setCoverOpacity:(1-percent) * 2];
+            [self.superview insertSubview:self
+                             belowSubview:nextview];
         }
     }else {
         if (percent > -0.5) {
@@ -192,12 +215,15 @@ static UILabel  *__label;
             preview.downImageView.hidden = YES;
             
             _downImageView.layer.transform = CATransform3DIdentity;
+            [_downImageView setCoverOpacity:0];
             CATransform3D transform = CATransform3DIdentity;
             transform.m34 = 0.001;
             _upImageView.layer.transform = CATransform3DRotate(transform,-M_PI * percent, 1, 0, 0);
+            [_upImageView setCoverOpacity:-percent*2];
             preview.upImageView.layer.transform = CATransform3DIdentity;
-            [self.superview insertSubview:self
-                             aboveSubview:preview];
+            [preview.upImageView setCoverOpacity:0];
+            [self.superview insertSubview:preview
+                             belowSubview:self];
         }else {
             _upImageView.hidden = YES;
             _downImageView.hidden = NO;
@@ -205,12 +231,15 @@ static UILabel  *__label;
             preview.downImageView.hidden = NO;
             
             _upImageView.layer.transform = CATransform3DIdentity;
+            [_upImageView setCoverOpacity:0];
             CATransform3D transform = CATransform3DIdentity;
             transform.m34 = 0.001;
             preview.downImageView.layer.transform = CATransform3DRotate(transform,M_PI * (-1-percent), 1, 0, 0);
+            [preview.downImageView setCoverOpacity:(-1-percent)*2];
             preview.upImageView.layer.transform = CATransform3DIdentity;
-            [self.superview insertSubview:preview
-                             aboveSubview:self];
+            [preview.upImageView setCoverOpacity:0];
+            [self.superview insertSubview:self
+                             belowSubview:preview];
         }
     }
 }
@@ -220,7 +249,7 @@ static UILabel  *__label;
               overblock:(MTFlipAnimationOverBlock)overblock
 {
     if (_percent < 0.5) {
-        [UIView animateWithDuration:0.2
+        [UIView animateWithDuration:0.3
                               delay:0 
                             options:UIViewAnimationCurveLinear
                          animations:^
@@ -228,16 +257,20 @@ static UILabel  *__label;
              CATransform3D transform = CATransform3DIdentity;
              transform.m34 = 0.001;
              _downImageView.layer.transform = CATransform3DRotate(transform, -M_PI / 2, 1, 0, 0);
+             [_downImageView setCoverOpacity:1];
          } completion:^(BOOL finished) 
          {
-             [self.superview insertSubview:self belowSubview:nextview];
+             [self.superview insertSubview:nextview aboveSubview:self];
              _downImageView.hidden = YES;
              CATransform3D transform = CATransform3DIdentity;
              transform.m34 = 0.001;
              nextview.upImageView.hidden = NO;
              nextview.upImageView.layer.transform = CATransform3DRotate(transform, M_PI / 2, 1, 0, 0);
+             [nextview.upImageView setCoverOpacity:1];
              if (finished) {
-                 [UIView animateWithDuration:0.4
+                 [nextview.upImageView coverOpacityAnimation:0
+                                                    duration:0.6];
+                 [UIView animateWithDuration:0.6
                                        delay:0
                                      options:UIViewAnimationCurveEaseOut
                                   animations:^
@@ -256,7 +289,9 @@ static UILabel  *__label;
              }
          }];
     }else {
-        [UIView animateWithDuration:0.4
+        [nextview.upImageView coverOpacityAnimation:0
+                                           duration:0.6];
+        [UIView animateWithDuration:0.6
                               delay:0
                             options:UIViewAnimationCurveEaseOut
                          animations:^
@@ -276,7 +311,7 @@ static UILabel  *__label;
                   overblock:(MTFlipAnimationOverBlock)overblock
 {
     if (_percent > -0.5) {
-        [UIView animateWithDuration:0.2
+        [UIView animateWithDuration:0.3
                               delay:0 
                             options:UIViewAnimationCurveLinear
                          animations:^
@@ -284,6 +319,7 @@ static UILabel  *__label;
              CATransform3D transform = CATransform3DIdentity;
              transform.m34 = 0.001;
              _upImageView.layer.transform = CATransform3DRotate(transform, M_PI / 2, 1, 0, 0);
+             [_upImageView setCoverOpacity:1];
          } completion:^(BOOL finished) 
          {
              [self.superview insertSubview:preview aboveSubview:self];
@@ -292,8 +328,11 @@ static UILabel  *__label;
              transform.m34 = 0.001;
              preview.downImageView.hidden = NO;
              preview.downImageView.layer.transform = CATransform3DRotate(transform, -M_PI / 2, 1, 0, 0);
+             [preview.downImageView setCoverOpacity:1];
              if (finished) {
-                 [UIView animateWithDuration:0.4
+                 [preview.downImageView coverOpacityAnimation:0
+                                                    duration:0.6];
+                 [UIView animateWithDuration:0.6
                                        delay:0
                                      options:UIViewAnimationCurveEaseOut
                                   animations:^
@@ -312,6 +351,8 @@ static UILabel  *__label;
              }
          }];
     }else {
+        [nextview.upImageView coverOpacityAnimation:0
+                                           duration:0.6];
         [UIView animateWithDuration:0.4
                               delay:0
                             options:UIViewAnimationCurveEaseOut
@@ -335,13 +376,10 @@ static UILabel  *__label;
                         options:UIViewAnimationCurveEaseOut
                      animations:^{
                          [preview setPercent:0
-                                   isUp:NO
                                isBorder:NO];
                          [nextview setPercent:0
-                                     isUp:NO
                                  isBorder:NO];
                          [self setPercent:0
-                                     isUp:NO
                                  isBorder:NO];
                      } completion:^(BOOL finished) {
                          if (overblock) {
@@ -357,7 +395,6 @@ static UILabel  *__label;
                         options:UIViewAnimationCurveEaseOut
                      animations:^{
                          [self setPercent:0
-                                     isUp:NO
                                  isBorder:NO];
                      } completion:^(BOOL finished) {
                          if (block) {

@@ -76,7 +76,7 @@ static NSMutableDictionary *__queueCache;
 }
 
 
-- (void)setPercent:(CGFloat)percent isUp:(BOOL)up isBorder:(BOOL)border{}
+- (void)setPercent:(CGFloat)percent isBorder:(BOOL)border{}
 - (void)setAnimationPercent:(CGFloat)percent
                     preview:(MTFlipAnimationView *)preview
                    nextview:(MTFlipAnimationView *)nextview{}

@@ -28,6 +28,8 @@
 		5F4B575C15B6A7120025CBA2 /* Demo2ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4B575B15B6A7120025CBA2 /* Demo2ViewController.m */; };
 		5F4B575F15B6B5000025CBA2 /* DemoSelecterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4B575E15B6B4FF0025CBA2 /* DemoSelecterViewController.m */; };
 		5F6F33A715B79D4C0038F437 /* Demo2AnimationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F6F33A615B79D4C0038F437 /* Demo2AnimationView.m */; };
+		FE91A91E15B9A9A1000C535C /* Demo2FanView.m in Sources */ = {isa = PBXBuildFile; fileRef = FE91A91D15B9A9A1000C535C /* Demo2FanView.m */; };
+		FE91A92115B9B2D4000C535C /* demo2_cover.png in Resources */ = {isa = PBXBuildFile; fileRef = FE91A92015B9B2D4000C535C /* demo2_cover.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -67,6 +69,9 @@
 		5F4B575E15B6B4FF0025CBA2 /* DemoSelecterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DemoSelecterViewController.m; sourceTree = "<group>"; };
 		5F6F33A515B79D4C0038F437 /* Demo2AnimationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Demo2AnimationView.h; sourceTree = "<group>"; };
 		5F6F33A615B79D4C0038F437 /* Demo2AnimationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Demo2AnimationView.m; sourceTree = "<group>"; };
+		FE91A91C15B9A9A1000C535C /* Demo2FanView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Demo2FanView.h; sourceTree = "<group>"; };
+		FE91A91D15B9A9A1000C535C /* Demo2FanView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Demo2FanView.m; sourceTree = "<group>"; };
+		FE91A92015B9B2D4000C535C /* demo2_cover.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = demo2_cover.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -174,10 +179,13 @@
 		5F4B575815B6A6AE0025CBA2 /* demo2 */ = {
 			isa = PBXGroup;
 			children = (
+				FE91A92015B9B2D4000C535C /* demo2_cover.png */,
 				5F4B575A15B6A7120025CBA2 /* Demo2ViewController.h */,
 				5F4B575B15B6A7120025CBA2 /* Demo2ViewController.m */,
 				5F6F33A515B79D4C0038F437 /* Demo2AnimationView.h */,
 				5F6F33A615B79D4C0038F437 /* Demo2AnimationView.m */,
+				FE91A91C15B9A9A1000C535C /* Demo2FanView.h */,
+				FE91A91D15B9A9A1000C535C /* Demo2FanView.m */,
 			);
 			path = demo2;
 			sourceTree = "<group>";
@@ -236,6 +244,7 @@
 				5F171F7E15B3B3670027E6A2 /* bg_detail_panelshadow.png in Resources */,
 				5F171F9515B3F00E0027E6A2 /* bg_detail_panelshadow@2X.png in Resources */,
 				5F171F9715B3F24A0027E6A2 /* DemoData.plist in Resources */,
+				FE91A92115B9B2D4000C535C /* demo2_cover.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -259,6 +268,7 @@
 				5F4B575C15B6A7120025CBA2 /* Demo2ViewController.m in Sources */,
 				5F4B575F15B6B5000025CBA2 /* DemoSelecterViewController.m in Sources */,
 				5F6F33A715B79D4C0038F437 /* Demo2AnimationView.m in Sources */,
+				FE91A91E15B9A9A1000C535C /* Demo2FanView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -282,7 +292,6 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -307,7 +316,6 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
@@ -324,11 +332,13 @@
 		5F171F6E15B3AF320027E6A2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer: zhao renzhi (9J8HWSRQE5)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "flipview/flipview-Prefix.pch";
 				INFOPLIST_FILE = "flipview/flipview-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "E8F0AAA0-5E96-48D9-87A1-922C671B9361";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -336,11 +346,13 @@
 		5F171F6F15B3AF320027E6A2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer: zhao renzhi (9J8HWSRQE5)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "flipview/flipview-Prefix.pch";
 				INFOPLIST_FILE = "flipview/flipview-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "E8F0AAA0-5E96-48D9-87A1-922C671B9361";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

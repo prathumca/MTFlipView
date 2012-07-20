@@ -35,7 +35,6 @@ typedef void(^MTFlipAnimationOverBlock)(BOOL finish);
 
 //aniamtion method should must be override.
 - (void)setPercent:(CGFloat)percent 
-              isUp:(BOOL)up 
           isBorder:(BOOL)border;
 - (void)setAnimationPercent:(CGFloat)percent 
                     preview:(MTFlipAnimationView*)preview

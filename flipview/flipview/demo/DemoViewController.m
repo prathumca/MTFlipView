@@ -94,7 +94,7 @@
 - (MTFlipAnimationView*)flipView:(MTDragFlipView*)flipView dragingView:(NSInteger)index
 {
     static NSString *indentify = @"demoView";
-    DemoAnimationView *view = (DemoAnimationView*)[flipView viewByIndentify:indentify];
+    DemoAnimationView *view = (DemoAnimationView*)[flipView dequeueReusableViewWithIdentifier:indentify];
     if (!view) {
         view = [[DemoAnimationView alloc] initWithFrame:CGRectMake(0, 0, 320, 416)];
         view.indentify = indentify;

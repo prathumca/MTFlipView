@@ -73,7 +73,9 @@
 
 - (UIView*)flipView:(MTDragFlipView*)flipView backgroudView:(NSInteger)index left:(BOOL)isLeft
 {
-    return nil;
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 460)];
+    view.backgroundColor = [UIColor grayColor];
+    return view;
 }
 
 
@@ -85,7 +87,7 @@
 - (MTFlipAnimationView*)flipView:(MTDragFlipView*)flipView dragingView:(NSInteger)index
 {
     static NSString *indentify = @"flipView";
-    Demo2AnimationView *view = (Demo2AnimationView*)[flipView viewByIndentify:indentify];
+    Demo2AnimationView *view = (Demo2AnimationView*)[flipView dequeueReusableViewWithIdentifier:indentify];
     if (!view) {
         view = [[Demo2AnimationView alloc] initWithFrame:CGRectMake(0, 0, 320, 416)];
         view.indentify = indentify;
