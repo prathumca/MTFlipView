@@ -111,7 +111,6 @@
 - (void)dealloc
 {
     [NSObject cancelPreviousPerformRequestsWithTarget:self];
-    [_backRightView removeFromSuperview];
 }
 
 #pragma mark - public methodes

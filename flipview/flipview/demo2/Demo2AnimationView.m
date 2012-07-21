@@ -155,7 +155,7 @@ static UILabel  *__label;
             [_upImageView setCoverOpacity:0];
             if (percent < -0.5) {
                 _downImageView.layer.transform = transform2;
-                [_downImageView setCoverOpacity:-percent * 2];
+                [_downImageView setCoverOpacity: (1+percent) * 2];
             }else _downImageView.hidden = YES;
         }else {
             _downImageView.hidden = NO;
@@ -235,7 +235,7 @@ static UILabel  *__label;
             CATransform3D transform = CATransform3DIdentity;
             transform.m34 = 0.001;
             preview.downImageView.layer.transform = CATransform3DRotate(transform,M_PI * (-1-percent), 1, 0, 0);
-            [preview.downImageView setCoverOpacity:(-1-percent)*2];
+            [preview.downImageView setCoverOpacity:(1+percent)*2];
             preview.upImageView.layer.transform = CATransform3DIdentity;
             [preview.upImageView setCoverOpacity:0];
             [self.superview insertSubview:self
@@ -351,7 +351,7 @@ static UILabel  *__label;
              }
          }];
     }else {
-        [nextview.upImageView coverOpacityAnimation:0
+        [preview.downImageView coverOpacityAnimation:0
                                            duration:0.6];
         [UIView animateWithDuration:0.4
                               delay:0
