@@ -21,7 +21,9 @@
 
 @end
 
-@implementation MTDragFlipView
+@implementation MTDragFlipView {
+    UIImageView *_backgroundView;
+}
 
 @synthesize delegate = _delegate, pageIndex = _pageIndex;
 @synthesize backgroundColor = m_backgroundColor;
@@ -89,6 +91,8 @@
         [_transationView addSubview:imageView];
         
         _animationInterval = 0.1f;
+        
+        _backgroundView = [[UIImageView alloc] initWithFrame:self.bounds];
     }
     return self;
 }
@@ -105,7 +109,7 @@
 - (void)setFrame:(CGRect)frame
 {
     [super setFrame:frame];
-    _transationView.frame = self.bounds;
+    _backgroundView.frame = _transationView.frame = self.bounds;
 }
 
 - (void)dealloc
@@ -733,6 +737,7 @@ static NSTimeInterval __start;
     switch (state) {
         case UIGestureRecognizerStateBegan:
         {
+            [_backgroundView removeFromSuperview];
             __start = [[NSDate date] timeIntervalSince1970];
             _tempPoint = p;
         }
@@ -900,8 +905,9 @@ static NSTimeInterval __start;
                         CGFloat p2 = (_tempPoint.y - p.y) / height;
                         [nowView setPercent:p2 isBorder:YES];
                         
-                        _transationView.backgroundColor = m_backgroundColor;
-                        [self _removeViewNotIndex:_pageIndex];
+                        _backgroundView.backgroundColor = m_backgroundColor;
+                        [_transationView insertSubview:_backgroundView
+                                          belowSubview:nowView];
                     }
                 }else if (p.y < _tempPoint.y) {
                     if (_pageIndex < _count - 1 /*&& (_state2 == 1 || _state2 == 0)*/) {
@@ -917,8 +923,9 @@ static NSTimeInterval __start;
                         CGFloat p2 = (_tempPoint.y - p.y) / height;
                         [nowView setPercent:p2 isBorder:YES];
                         
-                        [self _removeViewNotIndex:_pageIndex];
-                        _transationView.backgroundColor = m_backgroundColor;
+                        _backgroundView.backgroundColor = m_backgroundColor;
+                        [_transationView insertSubview:_backgroundView
+                                          belowSubview:nowView];
                     }
                 }
             }else {
@@ -1132,6 +1139,7 @@ static NSTimeInterval __start;
                  index:(NSInteger)index
 {
     NSArray *subviews = _transationView.subviews;
+    if ([subviews containsObject:view])return;
     if ([subviews containsObject:preview]) {
         if (_type == MTFlipViewTypeUpAbove)[_transationView insertSubview:view belowSubview:preview];
         else if (_type == MTFlipViewTypeDownAbove)[_transationView insertSubview:view aboveSubview:preview];
@@ -1163,17 +1171,6 @@ static NSTimeInterval __start;
     UIView *nv = [self getDragingView:index];
     if ([subviews containsObject:nv]) {
         [nv removeFromSuperview];
-    }
-}
-
-- (void)_removeViewNotIndex:(NSInteger)index
-{
-    NSArray *subviews = _transationView.subviews;
-    UIView *nv = [self getDragingView:index];
-    for (UIView *subview in subviews) {
-        if ([subview isKindOfClass:[MTFlipAnimationView class]] && subview != nv) {
-            [subview removeFromSuperview];
-        }
     }
 }
 

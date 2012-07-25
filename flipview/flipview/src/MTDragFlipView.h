@@ -78,8 +78,6 @@ typedef enum {
 //  缓存的MTFlipAnimationView, using for reusing MTFlipAnimationView.
 - (MTFlipAnimationView*)imageViewWithIndex:(NSInteger)index;
 - (MTFlipAnimationView*)dequeueReusableViewWithIdentifier:(NSString*)indentifier;
-//把页面缓存的imageView
-- (void)viewToImage:(UIView*)view atIndex:(NSInteger)index;
 
 //重载所有页面
 - (void)reloadData;
