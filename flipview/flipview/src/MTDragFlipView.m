@@ -705,6 +705,7 @@
                 [view removeFromSuperview];
             }
         }
+        [self _removeAllSubviews];
         _backRightView = nil;
         _backLeftView = nil;
         UIView *subView = [self getViewAtIndex:_pageIndex];
@@ -1171,6 +1172,14 @@ static NSTimeInterval __start;
     UIView *nv = [self getDragingView:index];
     if ([subviews containsObject:nv]) {
         [nv removeFromSuperview];
+    }
+}
+
+- (void)_removeAllSubviews
+{
+    NSArray *subviews = _transationView.subviews;
+    for (UIView *view in subviews) {
+        [view removeFromSuperview];
     }
 }
 

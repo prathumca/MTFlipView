@@ -249,7 +249,7 @@ static UILabel  *__label;
               overblock:(MTFlipAnimationOverBlock)overblock
 {
     if (_percent < 0.5) {
-        [UIView animateWithDuration:0.3
+        [UIView animateWithDuration:0.2
                               delay:0 
                             options:UIViewAnimationCurveLinear
                          animations:^
@@ -269,8 +269,8 @@ static UILabel  *__label;
              [nextview.upImageView setCoverOpacity:1];
              if (finished) {
                  [nextview.upImageView coverOpacityAnimation:0
-                                                    duration:0.6];
-                 [UIView animateWithDuration:0.6
+                                                    duration:0.3];
+                 [UIView animateWithDuration:0.3
                                        delay:0
                                      options:UIViewAnimationCurveEaseOut
                                   animations:^
@@ -290,8 +290,8 @@ static UILabel  *__label;
          }];
     }else {
         [nextview.upImageView coverOpacityAnimation:0
-                                           duration:0.6];
-        [UIView animateWithDuration:0.6
+                                           duration:0.3];
+        [UIView animateWithDuration:0.3
                               delay:0
                             options:UIViewAnimationCurveEaseOut
                          animations:^
@@ -311,7 +311,7 @@ static UILabel  *__label;
                   overblock:(MTFlipAnimationOverBlock)overblock
 {
     if (_percent > -0.5) {
-        [UIView animateWithDuration:0.3
+        [UIView animateWithDuration:0.2
                               delay:0 
                             options:UIViewAnimationCurveLinear
                          animations:^
@@ -331,8 +331,8 @@ static UILabel  *__label;
              [preview.downImageView setCoverOpacity:1];
              if (finished) {
                  [preview.downImageView coverOpacityAnimation:0
-                                                    duration:0.6];
-                 [UIView animateWithDuration:0.6
+                                                    duration:0.3];
+                 [UIView animateWithDuration:0.3
                                        delay:0
                                      options:UIViewAnimationCurveEaseOut
                                   animations:^
@@ -352,8 +352,8 @@ static UILabel  *__label;
          }];
     }else {
         [preview.downImageView coverOpacityAnimation:0
-                                           duration:0.6];
-        [UIView animateWithDuration:0.4
+                                           duration:0.3];
+        [UIView animateWithDuration:0.3
                               delay:0
                             options:UIViewAnimationCurveEaseOut
                          animations:^
