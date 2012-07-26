@@ -15,7 +15,9 @@ ScreenShot
 How to use
 ===========================================
 
-1, Make a ```MTDragFlipView```, such as : ```[[MTDragFlipView alloc] initWithType:MTFlipViewTypeUpAbove]```.
+1, Get code:```git clone https://github.com/dbsGen/MTFlipView.git```.
+
+2, Make a ```MTDragFlipView```, such as : ```[[MTDragFlipView alloc] initWithType:MTFlipViewTypeUpAbove]```.
 
 What is the ```MTFlipViewTypeUpAbove```?
 
@@ -39,7 +41,7 @@ What is the ```MTFlipViewTypeUpAbove```?
 
 ![screenshots](http://zhaorenzhi.cn/wp-content/uploads/2012/07/showabove.png)
 
-2, The delegate.
+3, The delegate.
 
     //  return the subview at index, can reuse.
     - (UIView*)flipView:(MTDragFlipView*)flipView subViewAtIndex:(NSInteger)index;
@@ -53,7 +55,7 @@ What is the ```MTFlipViewTypeUpAbove```?
     
 The above 3 method must be implemented. Refer my demos.
 
-3, ```MTFlipAnimationView```
+4, ```MTFlipAnimationView```
 
 The rendering of ```MTFlipAnimationView```:Because of saving memory and
 asynchronous rendering, so I make the real interactive interface to be reused. 
