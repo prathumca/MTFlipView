@@ -1,7 +1,7 @@
 MTFlipView
 ===========================================
 
-using to make view transation animation. It can use for many types of animations such as the type of FlipBoard.
+Using to make transition animation.
 
 
 ScreenShot
