@@ -281,7 +281,7 @@
     
     if (aniamted) {
         self.userInteractionEnabled = NO;
-        //清除旧的
+        //清除旧的 remove old views.
         for (int n = _pageIndex + 1 ; n < _cacheRange.location + _cacheRange.length ; n++) {
             MTFlipAnimationView *view = [_cachedImageViews lastObject];
             if ([view isKindOfClass:[UIView class]]) {
@@ -468,7 +468,6 @@
 {
     return abs(_transationView.center.x - (self.bounds.size.width / 2)) > 2;
 }
-
 
 - (void)clean
 {
@@ -901,6 +900,7 @@ static NSTimeInterval __start;
                                              preview:upView
                                             nextview:downView];
                         _transationView.backgroundColor = _blackColor;
+                        [self _removeBackgroundView];
                     }else if (_pageIndex <= 0 /*&& (_state2 == 4 || _state2 == 0)*/){
                         _state2 = 4;
                         CGFloat p2 = (_tempPoint.y - p.y) / height;
@@ -919,6 +919,7 @@ static NSTimeInterval __start;
                                              nextview:downView];
                         
                         _transationView.backgroundColor = _blackColor;
+                        [self _removeBackgroundView];
                     }else if (_pageIndex >= _count - 1 /*&& (_state2 == 3 || _state2 == 0)*/){
                         _state2 = 3;
                         CGFloat p2 = (_tempPoint.y - p.y) / height;
@@ -1139,8 +1140,8 @@ static NSTimeInterval __start;
               nextview:(MTFlipAnimationView*)nextview 
                  index:(NSInteger)index
 {
+    if (view.superview == _transationView)return;
     NSArray *subviews = _transationView.subviews;
-    if ([subviews containsObject:view])return;
     if ([subviews containsObject:preview]) {
         if (_type == MTFlipViewTypeUpAbove)[_transationView insertSubview:view belowSubview:preview];
         else if (_type == MTFlipViewTypeDownAbove)[_transationView insertSubview:view aboveSubview:preview];
@@ -1180,6 +1181,13 @@ static NSTimeInterval __start;
     NSArray *subviews = _transationView.subviews;
     for (UIView *view in subviews) {
         [view removeFromSuperview];
+    }
+}
+
+- (void)_removeBackgroundView
+{
+    if (_backgroundView.superview == _transationView) {
+        [_backgroundView removeFromSuperview];
     }
 }
 

@@ -103,7 +103,7 @@
     
     if (index == 0) {
         view.backgroundColor = [UIColor redColor];
-    }else view.backgroundColor = [UIColor blackColor];
+    }else view.backgroundColor = [UIColor blueColor];
     return view;
 }
 
